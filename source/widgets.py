@@ -19,8 +19,7 @@ class ClickLabel(QLabel):
 
     def mouseReleaseEvent(self, QMouseEvent):
         self.widget.release(QMouseEvent.pos(), self.id)
-
-
+    
 class MyPushButton(QPushButton):
     def setWidget(widget):
         MyPushButton.widget = widget

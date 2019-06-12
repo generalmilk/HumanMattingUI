@@ -3,20 +3,19 @@ import json
 import os
 import numpy as np
 import cv2
-import tkinter.messagebox
 
 from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
-                               QHBoxLayout, QSlider, QFileDialog, QMessageBox)
+                               QHBoxLayout, QSlider, QFileDialog,QMessageBox)
 from PySide2.QtCore import Slot, Qt, QSize
-from PySide2.QtGui import QPixmap, QImage, QCursor, QFont, QIcon
+from PySide2.QtGui import QPixmap, QImage, QCursor, QFont,QIcon
 
 from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyRadioButton
 from utils import numpytoPixmap, ImageInputs, addBlankToLayout
 from matting.solve_foreground_background import solve_foreground_background
 import tools
 import config
-
 import algorithm
+from selectDialog import SelectDialog
 
 
 class MyWidget(QWidget):
@@ -66,7 +65,6 @@ class MyWidget(QWidget):
         # self.bgid += 1
         self.bgid = bgid
         self.background = config.getBackground(self.rawSize[::-1], self.bgid)
-        QApplication.processEvents()
         self.setFinal()
 
     def changeBackground(self, alpha):
@@ -86,10 +84,18 @@ class MyWidget(QWidget):
             show = self.changeBackground(alpha)
             self.setImage(i + 3, array=show, resize=True, grid=self.gridFlag)
 
+    def openSelectDialog(self, image, trimaps):
+        self.selectDialog = SelectDialog(image, trimaps)
+        if self.selectDialog.exec_():
+            return trimaps[self.selectDialog.selectId]
+        else:
+            return trimaps[0]
+
     def open(self):
+        #list_file, file_type = QFileDialog.getOpenFileName(self, "open file list", '.', 'Txt files(*.txt)')
         list_file = QFileDialog.getExistingDirectory(self, 'open dir', '.')
         self.imageList = ImageInputs(list_file)
-        self.saveStatus=1
+
         self.newSet()
         self.setImageAlpha(self.imageAlpha)
 
@@ -97,9 +103,21 @@ class MyWidget(QWidget):
         for text in self.texts:
             text.setPixmap(None)
         if prev:
-            self.image, self.trimap, self.final, self.imgName, self.nowTriExist = self.imageList.previous()
+            self.image, self.trimaps, self.final,self.imgName = self.imageList.previous()
+            if len(self.trimaps) == 1:
+                self.trimap = self.trimaps[0]
+            else:
+                self.trimap = self.openSelectDialog(self.image, self.trimaps)
         else:
-            self.image, self.trimap, self.final, self.imgName, self.nowTriExist = self.imageList()
+            try:
+                self.image, self.trimaps, self.final,self.imgName = self.imageList()
+            except:
+                return None
+            if len(self.trimaps) == 1:
+                self.trimap = self.trimaps[0]
+            else:
+                self.trimap = self.openSelectDialog(self.image, self.trimaps)
+
         if len(self.trimap.shape) == 2:
             self.trimap = np.stack([self.trimap] * 3, axis=2)
         assert self.image.shape == self.trimap.shape
@@ -107,6 +125,7 @@ class MyWidget(QWidget):
         h, w = self.image.shape[:2]
         imgw, imgh = self.scale
         self.f = min(imgw / w, imgh / h)
+
 
         self.rawSize = (w, h)
         self.rawImage = self.image
@@ -117,15 +136,15 @@ class MyWidget(QWidget):
         self.history = []
         self.alphaHistory = []
         self.outputs = []
-        if self.nowTriExist:
-            self.run()
+
+        self.run()
+
         self.setSet()
         self.setFinal()
         self.getGradient()
         self.setWindowTitle(self.imgName)
         self.saveStatus = 0
         QApplication.processEvents()
-
 
     def popup(self):
         if self.saveStatus==1:
@@ -145,7 +164,7 @@ class MyWidget(QWidget):
         f = 1 / self.f
         # image = cv2.resize(self.image, self.rawSize)
         image = self.rawImage
-        trimap = cv2.resize(self.trimap, self.rawSize)
+        trimap = cv2.resize(self.trimap, self.rawSize, interpolation=cv2.INTER_NEAREST)
         return image, trimap
 
     def splitUp(self):
@@ -172,31 +191,22 @@ class MyWidget(QWidget):
     def solveForeground(self):
         self.setHistory()
         self.trimap = np.ones(self.trimap.shape) * 255
-        QApplication.processEvents()
 
     def showGrid(self):
         self.gridFlag = not self.gridFlag
-        QApplication.processEvents()
 
     def setImageAlpha(self, num):
         self.imageAlpha = num
         self.setSet()
         self.imageAlphaSlider.setValue(num)
-        QApplication.processEvents()
 
     def setFiller(self, num):
         self.filler.setTheta(num)
         self.fillerSlider.setValue(num)
 
         if self.lastCommand == "Filler":
-            # self.undo()
-            self.lastCommand = None
-            if len(self.history) > 0:
-                self.reHistory.append(self.trimap)
-                self.trimap = self.history.pop()
-                self.setSet()
+            self.undo()
             self.tool.refill()
-            # QApplication.processEvents()
 
     def fillerUp(self, num=1):
         theta = self.filler.getTheta()
@@ -216,7 +226,6 @@ class MyWidget(QWidget):
         self.undo()
         self.fillWidth += 1
         self.fillUnknown(True)
-        QApplication.processEvents()
 
     def unknownDown(self):
         if self.lastCommand != "FillUnknown":
@@ -228,12 +237,10 @@ class MyWidget(QWidget):
         self.undo()
         self.fillWidth -= 1
         self.fillUnknown(True)
-        QApplication.processEvents()
 
     def fillUnknown(self, refill=False):
         self.setHistory("FillUnknown")
         self.trimap = algorithm.fillUnknown(self.trimap, width=self.fillWidth)
-        QApplication.processEvents()
 
     def squeeze(self):
         self.setHistory()
@@ -283,13 +290,12 @@ class MyWidget(QWidget):
             self.outputs.append(output)
         if True:  # self.final is None:
             self.final = self.outputs[-1].copy()
-        QApplication.processEvents()
 
     def getToolObject(self, id):
         if id in [0, 1, 2]:
             return self.tool
-            # if id > 2 and id < self.n or id == -1:
-            #     return self.resultTool.setId(id)
+        # if id > 2 and id < self.n or id == -1:
+        #     return self.resultTool.setId(id)
 
     def click(self, pos, id):
         tool = self.getToolObject(id)
@@ -379,6 +385,7 @@ class MyWidget(QWidget):
         bC = self.buttonCol
         blankSize = self.blankSize
         self.toolWidgets = []
+
         for line in config.toolTexts:
             tempLine = []
             for tool in line:
@@ -400,9 +407,8 @@ class MyWidget(QWidget):
                         temp.setSliderType(lef, rig, type=typ)
                         temp.setFixedSize(QSize(bx * 3 + config.defaultBlank * 2, by))
                         self.setSlider(temp, command)
+
                         tempTool.append(temp)
-
-
                     elif command[-1] == '=':
                         command = command[:-1]
                         buttonGroup = MyButtonGroup(self, command)
@@ -458,7 +464,6 @@ class MyWidget(QWidget):
         self.functions = functions
         self.lastCommand = None
         self.history = []
-        self.reHistory = []
 
         # self.imageList = imageList
         self.scale = config.imgScale
@@ -474,7 +479,7 @@ class MyWidget(QWidget):
         self.tool.setWidget(self)
         # self.resultTool = tools.Concater()
         self.gridFlag = False
-        self.imgName = 'None'
+
         self.fillWidth = 5
 
         self.bgid = 0
@@ -502,8 +507,11 @@ class MyWidget(QWidget):
 
 
 def initialWidget(*args):
+    # inp = ImageInputs(inputList)
     app = QApplication(sys.argv)
+
     widget = MyWidget(functions=args)
+    # widget.resize(800, 600)
     widget.show()
 
     t = app.exec_()

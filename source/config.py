@@ -2,8 +2,8 @@ import numpy as np
 
 from tools import painterTools
 
-painterColors = {'Foreground':  (255, 255, 255),
-                 'Background':  (0, 0, 0),
+painterColors = {'Foreground':  (255, 255, 255), 
+                 'Background':  (0, 0, 0), 
                  'Unknown':     (128, 128, 128)}
 buttonString = \
 '''ImageAlphaSlider-
@@ -53,7 +53,7 @@ toolTexts = buttonKeys
 
 # blankSize = [10, 40]
 blankSize = [10, 15]
-defaultBlank = 5 #
+defaultBlank = 5
 
 for i in range(len(blankSize) - 1)[::-1]:
     blankSize[i + 1] -= blankSize[i]

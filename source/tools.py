@@ -39,12 +39,9 @@ class PainterTool(BaseTool):
     color = (0, 0, 0)
 
     def click(self, pos):
-        try:
-            self.checkWidget()
-            self.widget.setHistory(self.toolName)
-            self.afterClick(pos)
-        except:
-            pass
+        self.checkWidget()
+        self.widget.setHistory(self.toolName)
+        self.afterClick(pos)
 
     def setColor(self, color):
         PainterTool.color = color

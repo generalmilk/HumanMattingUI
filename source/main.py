@@ -14,7 +14,7 @@ def main():
             model1 = load_model('/data2/human_matting/models/alpha_models_0305/alpha_net_100.pth', 0)
             model2 = load_model('/data2/human_matting/models/alpha_models_bg/alpha_net_100.pth', 0)
         except:
-            model1 = load_model('/home/wuxian/human_matting/models/alpha_models_0305/alpha_net_100.pth', 0)
+            model1 = load_modçel('/home/wuxian/human_matting/models/alpha_models_0305/alpha_net_100.pth', 0)
             model2 = load_model('/home/wuxian/human_matting/models/alpha_models_bg/alpha_net_100.pth', 0)
         '''
 

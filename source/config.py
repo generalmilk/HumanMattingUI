@@ -2,21 +2,24 @@ import numpy as np
 
 from tools import painterTools
 
-painterColors = {'Foreground':  (255, 255, 255), 
-                 'Background':  (0, 0, 0), 
+painterColors = {'Foreground':  (255, 255, 255),
+                 'Background':  (0, 0, 0),
                  'Unknown':     (128, 128, 128)}
+
 buttonString = \
-'''ImageAlphaSlider-
-Foreground&Background&Unknown=
-Filler * FillerSlider-
+'''Foreground&Background&Unknown=
 Pen * PenSlider-
-#Squeeze SolveForeground FillUnknown UnknownUp|UnknownDown
-Run Undo Redo #Save SaveAlpha
+Filler * FillerSlider-
+SolveForeground Undo Redo
+FillUnknown UnknownUp UnknownDown
 Checkerboard&Red&Green&Blue=
-Open Previous Next'''
+Open Previous Next Run #Save SaveAlpha'''
+
 # SplitUp|SplitDown ShowGrid UndoAlpha
 buttonKeys = [[tool.split('|') for tool in block.split(' ')] for block in buttonString.split('\n')]
 commandText = {
+    'Top': '0%',
+    'Bottom': '100%',
     'SaveAlpha': 'Save',
     'Save': 'Save Trimap',
     'FillUnknown': 'Fill Unknown',
@@ -32,15 +35,16 @@ commandText = {
     'ChangeBG': 'Change Background',
     }
 
+# 渲染按钮对应 text
 def getText(command):
     if command not in commandText:
         return command
     return commandText[command]
 
 sliderConfig = {
-"ImageAlphaSlider":     (0, 1, "continuous"),
-"FillerSlider":         (1, 250, "log"),
-"PenSlider":     (1, 21, "discrete")
+    "ImageAlphaSlider":     (0, 1, "continuous"), #连续
+    "FillerSlider":         (1, 250, "log"),
+    "PenSlider":     (1, 21, "discrete") #离散
 }
 
 
@@ -51,18 +55,18 @@ colorKeys.sort()
 
 toolTexts = buttonKeys
 
-# blankSize = [10, 40]
+# 按钮间距
 blankSize = [10, 15]
 defaultBlank = 5
 
 for i in range(len(blankSize) - 1)[::-1]:
     blankSize[i + 1] -= blankSize[i]
-buttonScale = (120, 50)
+buttonScale = (120, 40)
 buttonCol = 3
 
 # imgScale = (750, 475)
-imgScale = (500, 400)
-imgRow = 2
+imgScale = (500, 500)
+imgRow = 1
 
 defaultSplit = 3
 

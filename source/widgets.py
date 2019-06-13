@@ -19,11 +19,13 @@ class ClickLabel(QLabel):
 
     def mouseReleaseEvent(self, QMouseEvent):
         self.widget.release(QMouseEvent.pos(), self.id)
-    
+
 class MyPushButton(QPushButton):
     def setWidget(widget):
         MyPushButton.widget = widget
         MyPushButton.buttons = {
+            'Top':              widget.Top,
+            'Bottom':              widget.Bottom,
             'Undo':             widget.undo,
             'Redo':             widget.redo,
             'Run':              widget.run,

@@ -1,6 +1,6 @@
 import sys
 import json
-import os
+import os,re
 import numpy as np
 import cv2
 
@@ -19,6 +19,11 @@ from selectDialog import SelectDialog
 
 
 class MyWidget(QWidget):
+    def Top(self):
+        self.setImageAlpha(1)
+
+    def Bottom(self):
+        self.setImageAlpha(0)
     def setImage(self, x, pixmap=None, array=None, resize=False, grid=False):
         assert pixmap is None or not grid, "Pixmap cannot draw grid."
 
@@ -56,15 +61,16 @@ class MyWidget(QWidget):
             self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
 
     def setSet(self):
-        self.setImage(0, array=self.image)
-        self.setImage(1, array=self.trimap)
+        # self.setImage(0, array=self.image)
+        # self.setImage(1, array=self.trimap)
         show = self.image * (1 - self.imageAlpha) + self.trimap * self.imageAlpha
-        self.setImage(2, array=show)
+        self.setImage(0, array=show)
 
     def changeBG(self, bgid):
         # self.bgid += 1
         self.bgid = bgid
         self.background = config.getBackground(self.rawSize[::-1], self.bgid)
+        QApplication.processEvents()
         self.setFinal()
 
     def changeBackground(self, alpha):
@@ -84,18 +90,32 @@ class MyWidget(QWidget):
             show = self.changeBackground(alpha)
             self.setImage(i + 3, array=show, resize=True, grid=self.gridFlag)
 
-    def openSelectDialog(self, image, trimaps):
-        self.selectDialog = SelectDialog(image, trimaps)
+    def openSelectDialog(self, image, trimaps,imgPath):
+        imgData = imgPath.split('/')
+        imgName = imgData[-1]
+        imgId = imgData[-1].split('.')[0]
+        imgFolder = imgData[-2]
+        resPath = imgPath[:len(imgPath)-int(len(imgName)+len(imgFolder)+1)]
+        dir_path = [resPath + 'candidates/result/face/%s.png'%imgId]
+        dir_path += [resPath + 'candidates/result/filler_3/%s.png'%imgId]
+        dir_path += [resPath + 'candidates/result/filler_4/%s.png'%imgId]
+        dir_path += [resPath + 'candidates/result/filler_5/%s.png'%imgId]
+        images = []
+        for i in dir_path:
+            if os.path.exists(i):
+                images.append(cv2.imread(i))
+
+        # self.lastImage(self.final, self.foreground)
+
+        self.selectDialog = SelectDialog(image,trimaps,images)
         if self.selectDialog.exec_():
             return trimaps[self.selectDialog.selectId]
         else:
             return trimaps[0]
 
     def open(self):
-        #list_file, file_type = QFileDialog.getOpenFileName(self, "open file list", '.', 'Txt files(*.txt)')
         list_file = QFileDialog.getExistingDirectory(self, 'open dir', '.')
         self.imageList = ImageInputs(list_file)
-
         self.newSet()
         self.setImageAlpha(self.imageAlpha)
 
@@ -106,8 +126,10 @@ class MyWidget(QWidget):
             self.image, self.trimaps, self.final,self.imgName = self.imageList.previous()
             if len(self.trimaps) == 1:
                 self.trimap = self.trimaps[0]
+                self.saveStatus = 1
             else:
-                self.trimap = self.openSelectDialog(self.image, self.trimaps)
+                self.trimap = self.openSelectDialog(self.image, self.trimaps,self.imgName)
+                self.saveStatus = 0
         else:
             try:
                 self.image, self.trimaps, self.final,self.imgName = self.imageList()
@@ -115,8 +137,10 @@ class MyWidget(QWidget):
                 return None
             if len(self.trimaps) == 1:
                 self.trimap = self.trimaps[0]
+                self.saveStatus = 1
             else:
-                self.trimap = self.openSelectDialog(self.image, self.trimaps)
+                self.trimap = self.openSelectDialog(self.image, self.trimaps,self.imgName)
+                self.saveStatus = 0
 
         if len(self.trimap.shape) == 2:
             self.trimap = np.stack([self.trimap] * 3, axis=2)
@@ -143,7 +167,7 @@ class MyWidget(QWidget):
         self.setFinal()
         self.getGradient()
         self.setWindowTitle(self.imgName)
-        self.saveStatus = 0
+
         QApplication.processEvents()
 
     def popup(self):
@@ -199,6 +223,7 @@ class MyWidget(QWidget):
         self.imageAlpha = num
         self.setSet()
         self.imageAlphaSlider.setValue(num)
+        QApplication.processEvents()
 
     def setFiller(self, num):
         self.filler.setTheta(num)
@@ -275,6 +300,7 @@ class MyWidget(QWidget):
 
     def saveAlpha(self):
         # self.imageList.saveAlpha(self.final)
+        # self.final:alpha, self.foreground:trimap
         self.imageList.saveBoth(self.final, self.foreground)
         self.save()
         self.saveStatus = 1
@@ -335,7 +361,7 @@ class MyWidget(QWidget):
     def initImageLayout(self):
         imgx, imgy = self.scale
         self.texts = []
-        for i in range(3):
+        for i in range(2):
             text = ClickLabel(self, i, "None")
             text.setAlignment(Qt.AlignTop)
             text.setFixedSize(QSize(imgx, imgy))
@@ -356,15 +382,53 @@ class MyWidget(QWidget):
 
         texts = self.texts[:3] + self.texts[-1:]
 
-        row = config.imgRow
+        # row = config.imgRow
+        row = 1
         col = (len(texts) + row - 1) // row
 
-        self.imageLayout = QVBoxLayout()
+        self.imageLayout = QHBoxLayout()
+        self.imageLayout.addStretch(1)
+
+        self.imageLayoutLeft = QVBoxLayout()
+        self.imageLayoutLeft.setAlignment(Qt.AlignCenter)
+        # self.imageLayoutLeft.addStretch()
+
+        self.imageLayoutRight = QHBoxLayout()
+        self.imageLayoutRight.addStretch()
+
         for i in range(row):
             rowLayout = QHBoxLayout()
+            rowLayout.addStretch(1);
             for j in texts[i * col: (i + 1) * col]:
                 rowLayout.addWidget(j)
-            self.imageLayout.addLayout(rowLayout)
+                rowLayout.setAlignment(Qt.AlignCenter)
+                rowLayout.addStretch()
+                rowLayout.setContentsMargins(20,20,20,20)
+                self.imageLayoutRight.addLayout(rowLayout)
+
+
+
+        bx, by = self.buttonScale
+        temp = MySlider(self, 'ImageAlphaSlider', Qt.Vertical)
+        self.setSlider(temp, 'ImageAlphaSlider')
+        temp.setTickPosition(QSlider.TicksBothSides)
+        lef, rig, typ = config.sliderConfig['ImageAlphaSlider']
+        temp.setSliderType(lef, rig, type=typ)
+        temp.setFixedSize(QSize(100, 300))
+        # self.setSlider(temp, 'ImageAlphaSlider')
+
+        temp_top = MyPushButton(self, config.getText('Top'), 'Top')
+        temp_top.setFixedSize(QSize(bx, (by - config.defaultBlank * (1 - 1)) // 1))
+        temp_bottom = MyPushButton(self, config.getText('Bottom'), 'Bottom')
+        temp_bottom.setFixedSize(QSize(bx, (by - config.defaultBlank * (1 - 1)) // 1))
+
+        self.imageLayoutLeft.addWidget(temp_top)
+        self.imageLayoutLeft.addWidget(temp)
+        self.imageLayoutLeft.addWidget(temp_bottom)
+
+
+        self.imageLayout.addLayout(self.imageLayoutLeft)
+        self.imageLayout.addLayout(self.imageLayoutRight)
 
     def setSlider(self, obj, command):
         if command == 'ImageAlphaSlider':
@@ -385,6 +449,17 @@ class MyWidget(QWidget):
         bC = self.buttonCol
         blankSize = self.blankSize
         self.toolWidgets = []
+
+        self.toolLayout = QHBoxLayout()
+        self.toolLayout.addStretch(1)
+
+        self.toolLayoutLeft = QVBoxLayout()
+        self.toolLayoutLeft.setMargin(10)
+        # self.toolLayoutLeft.addStretch(1)
+
+        self.toolLayoutRight = QVBoxLayout()
+        self.toolLayoutRight.setMargin(10)
+        self.toolLayoutRight.addStretch(1)
 
         for line in config.toolTexts:
             tempLine = []
@@ -437,30 +512,56 @@ class MyWidget(QWidget):
             if len(tempLine) > 0:
                 self.toolWidgets.append(tempLine)
 
-        self.toolLayout = QVBoxLayout()
-        self.toolLayout.setAlignment(Qt.AlignTop)
-        for line in self.toolWidgets:
-            bR = (len(line) - 1) // bC + 1
 
+        for line in self.toolWidgets[:5]:
+            bR = (len(line) - 1) // bC + 1
             for row in range(bR):
                 lineLayout = QHBoxLayout()
-                lineLayout.setAlignment(Qt.AlignLeft)
-
+                lineLayout.setAlignment(Qt.AlignTop)
                 for tool in line[row * bC: (row + 1) * bC]:
                     if tool is not None:
                         singleToolLayout = QVBoxLayout()
+                        singleToolLayout.setAlignment(Qt.AlignTop)
                         for obj in tool:
                             if obj is not None:
                                 singleToolLayout.addWidget(obj)
-                        lineLayout.addLayout(singleToolLayout)
-                self.toolLayout.addLayout(lineLayout)
-                addBlankToLayout(self.toolLayout, blankSize[0])
+                                lineLayout.addLayout(singleToolLayout)
+                self.toolLayoutLeft.addLayout(lineLayout)
 
-            addBlankToLayout(self.toolLayout, blankSize[1])
+
+
+
+        for line in self.toolWidgets[2:]:
+            bR = (len(line) - 1) // bC + 1
+            for row in range(bR):
+                lineLayout = QHBoxLayout()
+                lineLayout.setAlignment(Qt.AlignTop)
+                for tool in line[row * bC: (row + 1) * bC]:
+                    if tool is not None:
+                        singleToolLayout = QVBoxLayout()
+                        singleToolLayout.setAlignment(Qt.AlignTop)
+                        singleToolLayout.addStretch()
+                        for obj in tool:
+                            if obj is not None:
+                                singleToolLayout.addWidget(obj)
+                                lineLayout.addLayout(singleToolLayout)
+                self.toolLayoutRight.addLayout(lineLayout)
+
+
+
+                # self.toolLayout.addLayout(lineLayout)
+                # addBlankToLayout(self.toolLayout, blankSize[0])
+            # addBlankToLayout(self.toolLayout, blankSize[1])
+
+
+        self.toolLayout.addLayout(self.toolLayoutLeft)
+        self.toolLayout.addLayout(self.toolLayoutRight)
 
     def __init__(self, functions):
-        QWidget.__init__(self)
 
+        QWidget.__init__(self)
+        self.setMinimumSize(1250,920)
+        self.setMaximumSize(1250,920)
         self.functions = functions
         self.lastCommand = None
         self.history = []
@@ -499,7 +600,7 @@ class MyWidget(QWidget):
         self.trimapButtonGroup.button(1).setChecked(True)
         self.backgroundButtonGroup.button(0).setChecked(True)
 
-        self.mainLayout = QHBoxLayout()
+        self.mainLayout = QVBoxLayout()
         self.mainLayout.addLayout(self.imageLayout)
         self.mainLayout.addLayout(self.toolLayout)
 

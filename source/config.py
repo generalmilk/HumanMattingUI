@@ -12,7 +12,7 @@ Pen * PenSlider-
 Filler * FillerSlider-
 SolveForeground Undo Redo
 FillUnknown UnknownUp UnknownDown
-Checkerboard&Red&Green&Blue=
+Grid&Red&Green&Blue=
 Open Previous Next Run #Save SaveAlpha'''
 
 # SplitUp|SplitDown ShowGrid UndoAlpha
@@ -64,19 +64,19 @@ for i in range(len(blankSize) - 1)[::-1]:
 buttonScale = (120, 40)
 buttonCol = 3
 
-imgScale = (500, 500)
+imgScale = (300, 300)
 imgRow = 1
 
 defaultSplit = 3
 
-gridBG = np.ones([20, 20, 3]).astype("uint8") * 255
-gridBG[:10, :10] = 128
-gridBG[10:, 10:] = 128
+GridBG = np.ones([20, 20, 3]).astype("uint8") * 255
+GridBG[:10, :10] = 128
+GridBG[10:, 10:] = 128
 blueBG = np.array([[[255, 0, 0]]])
 greenBG = np.array([[[0, 255, 0]]])
 redBG = np.array([[[0, 0, 255]]])
 
-backgrounds = [gridBG, redBG, greenBG, blueBG]
+backgrounds = [GridBG, redBG, greenBG, blueBG]
 
 def getBackground(size, background = 2):
     background = background % len(backgrounds)

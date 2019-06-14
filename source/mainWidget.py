@@ -9,7 +9,7 @@ from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
 from PySide2.QtCore import Slot, Qt, QSize
 from PySide2.QtGui import QPixmap, QImage, QCursor, QFont,QIcon
 
-from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyRadioButton,HoverButtonTop,HoverButtonBottom
+from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyColorButton,HoverButtonTop,HoverButtonBottom
 from utils import numpytoPixmap, ImageInputs, addBlankToLayout
 from matting.solve_foreground_background import solve_foreground_background
 import tools
@@ -311,6 +311,7 @@ class MyWidget(QWidget):
             self.outputs.append(output)
         if True:  # self.final is None:
             self.final = self.outputs[-1].copy()
+        QApplication.processEvents()
 
     def getToolObject(self, id):
         if id in [0, 1, 2]:
@@ -408,7 +409,7 @@ class MyWidget(QWidget):
     def setButtonGroup(self, obj, command):
         if command == 'Foreground&Background&Unknown':
             self.trimapButtonGroup = obj
-        elif command == 'Checkerboard&Red&Green&Blue':
+        elif command == 'Grid&Red&Green&Blue':
             self.backgroundButtonGroup = obj
 
     def initToolLayout(self):
@@ -457,7 +458,7 @@ class MyWidget(QWidget):
                         subCommands = command.split('&')
                         id = 0
                         for subCommand in subCommands:
-                            temp = MyRadioButton(self, subCommand)
+                            temp = MyColorButton(self, subCommand)
                             if subCommand == "Foreground":
                                 temp.setIcon(QIcon("icon/icon_1.png"))
                             elif subCommand == "Background":
@@ -515,17 +516,17 @@ class MyWidget(QWidget):
         buttonGroup = MyButtonGroup(self, "Foreground&Background&Unknown")
         self.colorBox = QGroupBox()
         colorLayout = QVBoxLayout()
-        foregroundRadio = MyRadioButton(self, "Foreground")
+        foregroundRadio = MyColorButton(self, "Foreground")
         foregroundRadio.setIcon(QIcon("icon/icon_1.png"))
         colorLayout.addWidget(foregroundRadio)
         buttonGroup.addRadioButton(foregroundRadio, 0)
 
-        backgroundRadio = MyRadioButton(self, "Background")
+        backgroundRadio = MyColorButton(self, "Background")
         backgroundRadio.setIcon(QIcon("icon/icon_2.png"))
         colorLayout.addWidget(backgroundRadio)
         buttonGroup.addRadioButton(backgroundRadio, 1)
 
-        unknownRadio = MyRadioButton(self, "Unknown")
+        unknownRadio = MyColorButton(self, "Unknown")
         unknownRadio.setIcon(QIcon("icon/icon_3.png"))
         colorLayout.addWidget(unknownRadio)
         buttonGroup.addRadioButton(unknownRadio, 2)
@@ -610,25 +611,25 @@ class MyWidget(QWidget):
         layout = QGridLayout()
 
         #Foreground Background Unknown
-        buttonGroup = MyButtonGroup(self, "Checkerboard&Red&Green&Blue")
+        buttonGroup = MyButtonGroup(self, "Grid&Red&Green&Blue")
         self.colorBox = QGroupBox("背景色")
         colorLayout = QVBoxLayout()
-        checkerBoardRadio = MyRadioButton(self, "Checkerboard")
-        checkerBoardRadio.setIcon(QIcon("icon/icon_1.png"))
-        colorLayout.addWidget(checkerBoardRadio)
-        buttonGroup.addRadioButton(checkerBoardRadio, 0)
+        GridRadio = MyColorButton(self, "Grid")
+        GridRadio.setIcon(QIcon("icon/icon_1.png"))
+        colorLayout.addWidget(GridRadio)
+        buttonGroup.addRadioButton(GridRadio, 0)
 
-        redRadio = MyRadioButton(self, "Red")
+        redRadio = MyColorButton(self, "Red")
         redRadio.setIcon(QIcon("icon/icon_2.png"))
         colorLayout.addWidget(redRadio)
         buttonGroup.addRadioButton(redRadio, 1)
 
-        greenRadio = MyRadioButton(self, "Green")
+        greenRadio = MyColorButton(self, "Green")
         greenRadio.setIcon(QIcon("icon/icon_3.png"))
         colorLayout.addWidget(greenRadio)
         buttonGroup.addRadioButton(greenRadio, 2)
 
-        blueRadio = MyRadioButton(self, "Blue")
+        blueRadio = MyColorButton(self, "Blue")
         blueRadio.setIcon(QIcon("icon/icon_3.png"))
         colorLayout.addWidget(blueRadio)
         self.colorBox.setLayout(colorLayout)
@@ -674,8 +675,8 @@ class MyWidget(QWidget):
     def __init__(self, functions):
 
         QWidget.__init__(self)
-        self.setMinimumSize(1250,920)
-        self.setMaximumSize(1250,920)
+        self.setMinimumSize(1000,715)
+        self.setMaximumSize(1000,715)
         self.functions = functions
         self.lastCommand = None
         self.history = []

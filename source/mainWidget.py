@@ -5,7 +5,7 @@ import numpy as np
 import cv2
 
 from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
-                               QHBoxLayout, QSlider, QFileDialog,QMessageBox)
+                               QHBoxLayout, QSlider, QFileDialog,QMessageBox, QGroupBox,QGridLayout,QPushButton)
 from PySide2.QtCore import Slot, Qt, QSize
 from PySide2.QtGui import QPixmap, QImage, QCursor, QFont,QIcon
 
@@ -358,10 +358,88 @@ class MyWidget(QWidget):
         #     self.setColor("Unknown")
         assert self.tool.toolName == toolName, toolName + " mapping wrong object"
 
+    # def initImageLayout(self):
+    #     imgx, imgy = self.scale
+    #     self.texts = []
+    #     for i in range(2):
+    #         text = ClickLabel(self, i, "None")
+    #         text.setAlignment(Qt.AlignTop)
+    #         text.setFixedSize(QSize(imgx, imgy))
+    #         self.texts.append(text)
+
+    #     # for i, f in enumerate(self.functions):
+    #     #     text = ClickLabel(self, i + 3, "")
+    #     #     text.setAlignment(Qt.AlignTop)
+    #     #     text.setFixedSize(QSize(imgx, imgy))
+    #     #     self.texts.append(text)
+
+    #     text = ClickLabel(self, -1, "")
+    #     text.setAlignment(Qt.AlignTop)
+    #     text.setFixedSize(QSize(imgx, imgy))
+    #     self.texts.append(text)
+
+    #     # self.newSet()
+
+    #     texts = self.texts[:3] + self.texts[-1:]
+
+    #     # row = config.imgRow
+    #     row = 1
+    #     col = (len(texts) + row - 1) // row
+
+    #     self.imageLayout = QHBoxLayout()
+    #     self.imageLayout.addStretch(1)
+
+    #     self.imageLayoutLeft = QVBoxLayout()
+    #     self.imageLayoutLeft.setAlignment(Qt.AlignCenter)
+    #     # self.imageLayoutLeft.addStretch()
+
+    #     self.imageLayoutRight = QHBoxLayout()
+    #     self.imageLayoutRight.addStretch()
+
+    #     for i in range(row):
+    #         rowLayout = QHBoxLayout()
+    #         rowLayout.addStretch(1);
+    #         for j in texts[i * col: (i + 1) * col]:
+    #             rowLayout.addWidget(j)
+    #             rowLayout.setAlignment(Qt.AlignCenter)
+    #             rowLayout.addStretch()
+    #             rowLayout.setContentsMargins(20,20,20,20)
+    #             self.imageLayoutRight.addLayout(rowLayout)
+
+
+
+    #     bx, by = self.buttonScale
+    #     temp = MySlider(self, 'ImageAlphaSlider', Qt.Vertical)
+    #     self.setSlider(temp, 'ImageAlphaSlider')
+    #     temp.setTickPosition(QSlider.TicksBothSides)
+    #     lef, rig, typ = config.sliderConfig['ImageAlphaSlider']
+    #     temp.setSliderType(lef, rig, type=typ)
+    #     temp.setFixedSize(QSize(100, 300))
+    #     # self.setSlider(temp, 'ImageAlphaSlider')
+
+    #     temp_top = MyPushButton(self, config.getText('Top'), 'Top')
+    #     temp_top.setFixedSize(QSize(bx, (by - config.defaultBlank * (1 - 1)) // 1))
+    #     temp_bottom = MyPushButton(self, config.getText('Bottom'), 'Bottom')
+    #     temp_bottom.setFixedSize(QSize(bx, (by - config.defaultBlank * (1 - 1)) // 1))
+
+    #     self.imageLayoutLeft.addWidget(temp_top)
+    #     self.imageLayoutLeft.addWidget(temp)
+    #     self.imageLayoutLeft.addWidget(temp_bottom)
+
+
+    #     self.imageLayout.addLayout(self.imageLayoutLeft)
+    #     self.imageLayout.addLayout(self.imageLayoutRight)
     def initImageLayout(self):
+
+        self.hImageGroupBox = QGroupBox("Images")
+        imageLayout = QGridLayout()
+
+        imageSourceGroupBox = QGroupBox("Source")
+        imageResultGroupBox = QGroupBox("Result")
+
         imgx, imgy = self.scale
         self.texts = []
-        for i in range(2):
+        for i in range(1):
             text = ClickLabel(self, i, "None")
             text.setAlignment(Qt.AlignTop)
             text.setFixedSize(QSize(imgx, imgy))
@@ -382,53 +460,17 @@ class MyWidget(QWidget):
 
         texts = self.texts[:3] + self.texts[-1:]
 
-        # row = config.imgRow
-        row = 1
-        col = (len(texts) + row - 1) // row
+        imageSourceLayout = QHBoxLayout()
+        imageSourceLayout.addWidget(texts[0])
+        imageSourceGroupBox.setLayout(imageSourceLayout)
+        imageResultLayout = QHBoxLayout()
+        imageResultLayout.addWidget(texts[1])
+        imageResultGroupBox.setLayout(imageResultLayout)
 
-        self.imageLayout = QHBoxLayout()
-        self.imageLayout.addStretch(1)
-
-        self.imageLayoutLeft = QVBoxLayout()
-        self.imageLayoutLeft.setAlignment(Qt.AlignCenter)
-        # self.imageLayoutLeft.addStretch()
-
-        self.imageLayoutRight = QHBoxLayout()
-        self.imageLayoutRight.addStretch()
-
-        for i in range(row):
-            rowLayout = QHBoxLayout()
-            rowLayout.addStretch(1);
-            for j in texts[i * col: (i + 1) * col]:
-                rowLayout.addWidget(j)
-                rowLayout.setAlignment(Qt.AlignCenter)
-                rowLayout.addStretch()
-                rowLayout.setContentsMargins(20,20,20,20)
-                self.imageLayoutRight.addLayout(rowLayout)
-
-
-
-        bx, by = self.buttonScale
-        temp = MySlider(self, 'ImageAlphaSlider', Qt.Vertical)
-        self.setSlider(temp, 'ImageAlphaSlider')
-        temp.setTickPosition(QSlider.TicksBothSides)
-        lef, rig, typ = config.sliderConfig['ImageAlphaSlider']
-        temp.setSliderType(lef, rig, type=typ)
-        temp.setFixedSize(QSize(100, 300))
-        # self.setSlider(temp, 'ImageAlphaSlider')
-
-        temp_top = MyPushButton(self, config.getText('Top'), 'Top')
-        temp_top.setFixedSize(QSize(bx, (by - config.defaultBlank * (1 - 1)) // 1))
-        temp_bottom = MyPushButton(self, config.getText('Bottom'), 'Bottom')
-        temp_bottom.setFixedSize(QSize(bx, (by - config.defaultBlank * (1 - 1)) // 1))
-
-        self.imageLayoutLeft.addWidget(temp_top)
-        self.imageLayoutLeft.addWidget(temp)
-        self.imageLayoutLeft.addWidget(temp_bottom)
-
-
-        self.imageLayout.addLayout(self.imageLayoutLeft)
-        self.imageLayout.addLayout(self.imageLayoutRight)
+        imageLayout.addWidget(imageSourceGroupBox,0,0)
+        imageLayout.addWidget(imageResultGroupBox,0,1)
+        
+        self.hImageGroupBox.setLayout(imageLayout)
 
     def setSlider(self, obj, command):
         if command == 'ImageAlphaSlider':
@@ -513,49 +555,234 @@ class MyWidget(QWidget):
                 self.toolWidgets.append(tempLine)
 
 
-        for line in self.toolWidgets[:5]:
-            bR = (len(line) - 1) // bC + 1
-            for row in range(bR):
-                lineLayout = QHBoxLayout()
-                lineLayout.setAlignment(Qt.AlignTop)
-                for tool in line[row * bC: (row + 1) * bC]:
-                    if tool is not None:
-                        singleToolLayout = QVBoxLayout()
-                        singleToolLayout.setAlignment(Qt.AlignTop)
-                        for obj in tool:
-                            if obj is not None:
-                                singleToolLayout.addWidget(obj)
-                                lineLayout.addLayout(singleToolLayout)
-                self.toolLayoutLeft.addLayout(lineLayout)
+        # for line in self.toolWidgets[:5]:
+        #     bR = (len(line) - 1) // bC + 1
+        #     for row in range(bR):
+        #         lineLayout = QHBoxLayout()
+        #         lineLayout.setAlignment(Qt.AlignTop)
+        #         for tool in line[row * bC: (row + 1) * bC]:
+        #             if tool is not None:
+        #                 singleToolLayout = QVBoxLayout()
+        #                 singleToolLayout.setAlignment(Qt.AlignTop)
+        #                 for obj in tool:
+        #                     if obj is not None:
+        #                         singleToolLayout.addWidget(obj)
+        #                         lineLayout.addLayout(singleToolLayout)
+        #         self.toolLayoutLeft.addLayout(lineLayout)
 
 
 
 
-        for line in self.toolWidgets[2:]:
-            bR = (len(line) - 1) // bC + 1
-            for row in range(bR):
-                lineLayout = QHBoxLayout()
-                lineLayout.setAlignment(Qt.AlignTop)
-                for tool in line[row * bC: (row + 1) * bC]:
-                    if tool is not None:
-                        singleToolLayout = QVBoxLayout()
-                        singleToolLayout.setAlignment(Qt.AlignTop)
-                        singleToolLayout.addStretch()
-                        for obj in tool:
-                            if obj is not None:
-                                singleToolLayout.addWidget(obj)
-                                lineLayout.addLayout(singleToolLayout)
-                self.toolLayoutRight.addLayout(lineLayout)
+        # for line in self.toolWidgets[2:]:
+        #     bR = (len(line) - 1) // bC + 1
+        #     for row in range(bR):
+        #         lineLayout = QHBoxLayout()
+        #         lineLayout.setAlignment(Qt.AlignTop)
+        #         for tool in line[row * bC: (row + 1) * bC]:
+        #             if tool is not None:
+        #                 singleToolLayout = QVBoxLayout()
+        #                 singleToolLayout.setAlignment(Qt.AlignTop)
+        #                 singleToolLayout.addStretch()
+        #                 for obj in tool:
+        #                     if obj is not None:
+        #                         singleToolLayout.addWidget(obj)
+        #                         lineLayout.addLayout(singleToolLayout)
+        #         self.toolLayoutRight.addLayout(lineLayout)
 
 
 
-                # self.toolLayout.addLayout(lineLayout)
-                # addBlankToLayout(self.toolLayout, blankSize[0])
-            # addBlankToLayout(self.toolLayout, blankSize[1])
+        #         # self.toolLayout.addLayout(lineLayout)
+        #         # addBlankToLayout(self.toolLayout, blankSize[0])
+        #     # addBlankToLayout(self.toolLayout, blankSize[1])
 
 
-        self.toolLayout.addLayout(self.toolLayoutLeft)
-        self.toolLayout.addLayout(self.toolLayoutRight)
+        # self.toolLayout.addLayout(self.toolLayoutLeft)
+        # self.toolLayout.addLayout(self.toolLayoutRight)
+
+    def initAlphaSliderLayout(self):
+        self.vboxAlphaBox = QGroupBox("Image Alpha")
+        layout = QVBoxLayout()
+        layout.addWidget(QPushButton("Image"))
+        
+        temp = MySlider(self, 'ImageAlphaSlider', Qt.Vertical)
+        self.setSlider(temp, 'ImageAlphaSlider')
+        temp.setTickPosition(QSlider.TicksBothSides)
+        lef, rig, typ = config.sliderConfig['ImageAlphaSlider']
+        temp.setSliderType(lef, rig, type=typ)
+        temp.setFixedSize(QSize(100, 300))
+        self.setSlider(temp, 'ImageAlphaSlider')
+        layout.addWidget(temp)
+
+        layout.addWidget(QPushButton("Trimap"))
+        self.vboxAlphaBox.setLayout(layout)
+
+    def initToolLeftGridLayout(self):
+        bx, by = self.buttonScale
+        bC = self.buttonCol
+        blankSize = self.blankSize
+
+        self.toolLeftGridGroupBox = QGroupBox("Tools")
+        layout = QGridLayout()
+
+        #Foreground Background Unknown
+        buttonGroup = MyButtonGroup(self, "Foreground&Background&Unknown")
+        self.colorBox = QGroupBox()
+        colorLayout = QVBoxLayout()
+        foregroundRadio = MyRadioButton(self, "Foreground")
+        foregroundRadio.setIcon(QIcon("icon/icon_1.png"))
+        colorLayout.addWidget(foregroundRadio)
+        buttonGroup.addRadioButton(foregroundRadio, 0)
+
+        backgroundRadio = MyRadioButton(self, "Background")
+        backgroundRadio.setIcon(QIcon("icon/icon_2.png"))
+        colorLayout.addWidget(backgroundRadio)
+        buttonGroup.addRadioButton(backgroundRadio, 1)
+
+        unknownRadio = MyRadioButton(self, "Unknown")
+        unknownRadio.setIcon(QIcon("icon/icon_3.png"))
+        colorLayout.addWidget(unknownRadio)
+        buttonGroup.addRadioButton(unknownRadio, 2)
+        self.colorBox.setLayout(colorLayout)
+
+        #pen
+        penButton = MyPushButton(self, config.getText("Pen"), "Pen")
+        penButton.setFixedSize(QSize(80,40))
+        #pen slider
+        penSlider = MySlider(self, "PenSlider", Qt.Horizontal)
+        self.setSlider(penSlider, "PenSlider")
+        penSlider.setTickPosition(QSlider.TicksBothSides)
+        lef, rig, typ = config.sliderConfig["PenSlider"]
+        penSlider.setSliderType(lef, rig, type=typ)
+        penSlider.setFixedSize(QSize(bx * 3 + config.defaultBlank * 2, by))
+        self.setSlider(penSlider, "PenSlider")
+
+        #filler
+        fillerButton = MyPushButton(self, config.getText("Filler"), "Filler")
+        fillerButton.setFixedSize(QSize(80,40))
+        #filler slider
+        fillerSlider = MySlider(self, "FillerSlider", Qt.Horizontal)
+        self.setSlider(fillerSlider, "FillerSlider")
+        fillerSlider.setTickPosition(QSlider.TicksBothSides)
+        lef, rig, typ = config.sliderConfig["FillerSlider"]
+        fillerSlider.setSliderType(lef, rig, type=typ)
+        fillerSlider.setFixedSize(QSize(bx * 3 + config.defaultBlank * 2, by))
+        self.setSlider(fillerSlider, "FillerSlider")
+
+
+        #clean trimap
+        cleantrimapButton = MyPushButton(self, config.getText("SolveForeground"), "SolveForeground")
+
+        undoButton = MyPushButton(self, config.getText("Undo"), "Undo")
+        redoButton = MyPushButton(self, config.getText("Redo"), "Redo")
+        redoButton.setFixedSize(QSize(80,40))
+        undoButton.setFixedSize(QSize(80,40))
+        # cleantrimapButton.setFixedSize(QSize(80,40))
+        cleantrimapButton.setFixedHeight(40)
+
+        fileUnknownButton = MyPushButton(self, config.getText("FillUnknown"), "FillUnknown")
+        unknownUpButton = MyPushButton(self, config.getText("UnknownUp"), "UnknownUp")
+        unknownDownButton = MyPushButton(self, config.getText("UnknownDown"), "UnknownDown")
+        # fileUnknownButton.setFixedSize(QSize(self.width(),40))
+        fileUnknownButton.setFixedHeight(60)
+        # unknownUpButton.setFixedHeight(40)
+        # unknownUpButton.setFixedSize(QSize(self.width(),40))
+
+
+        runButton = MyPushButton(self, config.getText("Run"), "Run")
+        runButton.setFixedHeight(60)
+        runButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
+                                       "QPushButton:hover{background-color:#05f}"
+                                       "QPushButton{background-color:#477be4}"
+                                       "QPushButton{border:2px}"
+                                       "QPushButton{border-radius:10px}"
+                                       "QPushButton{padding:2px 4px}")
+
+        layout.setSpacing(10) 
+        layout.addWidget(self.colorBox,0,0,2,1)
+        layout.addWidget(penButton,0,1)
+        layout.addWidget(penSlider,0,2,1,4)
+        layout.addWidget(fillerButton,1,1)
+        layout.addWidget(fillerSlider,1,2,1,4)
+        layout.addWidget(cleantrimapButton,2,0)
+        layout.addWidget(undoButton,2,1)
+        layout.addWidget(redoButton,2,2)
+        layout.addWidget(fileUnknownButton,3,0,2,1)
+        layout.addWidget(unknownUpButton,3,1)
+        layout.addWidget(unknownDownButton,4,1)
+        layout.addWidget(runButton,3,4,2,2)
+        self.toolLeftGridGroupBox.setLayout(layout)
+    
+    def initToolRightGridLayout(self):
+        bx, by = self.buttonScale
+        bC = self.buttonCol
+        blankSize = self.blankSize
+
+        self.toolWidgets = []
+
+        self.toolRightGridGroupBox = QGroupBox("Tools")
+        layout = QGridLayout()
+
+        #Foreground Background Unknown
+        buttonGroup = MyButtonGroup(self, "Checkerboard&Red&Green&Blue")
+        self.colorBox = QGroupBox("背景色")
+        colorLayout = QVBoxLayout()
+        checkerBoardRadio = MyRadioButton(self, "Checkerboard")
+        checkerBoardRadio.setIcon(QIcon("icon/icon_1.png"))
+        colorLayout.addWidget(checkerBoardRadio)
+        buttonGroup.addRadioButton(checkerBoardRadio, 0)
+
+        redRadio = MyRadioButton(self, "Red")
+        redRadio.setIcon(QIcon("icon/icon_2.png"))
+        colorLayout.addWidget(redRadio)
+        buttonGroup.addRadioButton(redRadio, 1)
+
+        greenRadio = MyRadioButton(self, "Green")
+        greenRadio.setIcon(QIcon("icon/icon_3.png"))
+        colorLayout.addWidget(greenRadio)
+        buttonGroup.addRadioButton(greenRadio, 2)
+
+        blueRadio = MyRadioButton(self, "Blue")
+        blueRadio.setIcon(QIcon("icon/icon_3.png"))
+        colorLayout.addWidget(blueRadio)
+        self.colorBox.setLayout(colorLayout)
+        buttonGroup.addRadioButton(blueRadio, 3)
+
+        #Previous
+        previousButton = MyPushButton(self, config.getText("Previous"), "Previous")
+        #Next
+        nextButton = MyPushButton(self, config.getText("Next"), "Next")
+
+        #clean trimap
+        # openButton = QPushButton("Open")
+        # openButton = MyPushButton(self, config.getText("Open"), "Open")
+        openButton = MyPushButton(self, config.getText("Open"), "Open")
+        saveButton = MyPushButton(self, config.getText("SaveAlpha"), "SaveAlpha")
+        previousButton.setFixedHeight(40)
+        nextButton.setFixedHeight(40)
+        # openButton.setFixedHeight(60)
+        openButton.setFixedHeight(60)
+        saveButton.setFixedHeight(60)
+        openButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
+                                       "QPushButton:hover{background-color:#777}"
+                                       "QPushButton{background-color:#999}"
+                                       "QPushButton{border:2px}"
+                                       "QPushButton{border-radius:10px}"
+                                       "QPushButton{padding:2px 4px}")
+        saveButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
+                                       "QPushButton:hover{background-color:#da4f4f}"
+                                       "QPushButton{background-color:#da6565}"
+                                       "QPushButton{border:2px}"
+                                       "QPushButton{border-radius:10px}"
+                                       "QPushButton{padding:2px 4px}")
+
+        # layout.setSpacing(10) 
+        layout.addWidget(self.colorBox,0,0,3,1)
+        layout.addWidget(previousButton,1,1)
+        layout.addWidget(nextButton,1,2)
+        # layout.addWidget(openButton,3,0)
+        layout.addWidget(openButton,3,1)
+        layout.addWidget(saveButton,3,2)
+        self.toolRightGridGroupBox.setLayout(layout)
 
     def __init__(self, functions):
 
@@ -593,6 +820,9 @@ class MyWidget(QWidget):
         MyPushButton.setWidget(self)
         self.initImageLayout()
         self.initToolLayout()
+        self.initAlphaSliderLayout()
+        self.initToolLeftGridLayout()
+        self.initToolRightGridLayout()
 
         # self.setImageAlpha(self.imageAlpha)
         self.setFiller(self.filler.getTheta())
@@ -601,8 +831,15 @@ class MyWidget(QWidget):
         self.backgroundButtonGroup.button(0).setChecked(True)
 
         self.mainLayout = QVBoxLayout()
-        self.mainLayout.addLayout(self.imageLayout)
-        self.mainLayout.addLayout(self.toolLayout)
+        imageBoxLayout = QHBoxLayout()
+        imageBoxLayout.addWidget(self.vboxAlphaBox)
+        imageBoxLayout.addWidget(self.hImageGroupBox)
+        self.mainLayout.addLayout(imageBoxLayout)
+        toolBoxLayout = QHBoxLayout()
+        toolBoxLayout.addWidget(self.toolLeftGridGroupBox)
+        toolBoxLayout.addWidget(self.toolRightGridGroupBox)
+        self.mainLayout.addLayout(toolBoxLayout)
+        # self.mainLayout.addLayout(self.toolLayout)
 
         self.setLayout(self.mainLayout)
 

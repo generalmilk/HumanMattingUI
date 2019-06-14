@@ -5,6 +5,35 @@ from PySide2.QtWidgets import QLabel, QPushButton, QSlider, QRadioButton, QButto
 import config
 import tools
 
+
+class HoverButtonTop(QPushButton):
+
+    def __init__(self, widget, parent=None):
+        self.widget = widget
+        QPushButton.__init__(self, parent)
+        self.setMouseTracking(True)
+
+    def enterEvent(self, event):
+        self.widget.setSetToggle(1)
+
+    def leaveEvent(self, event):
+        self.widget.setSet()
+
+
+
+class HoverButtonBottom(QPushButton):
+
+    def __init__(self, widget, parent=None):
+        self.widget = widget
+        QPushButton.__init__(self, parent)
+        self.setMouseTracking(True)
+
+    def enterEvent(self, event):
+        self.widget.setSetToggle(0)
+
+    def leaveEvent(self, event):
+        self.widget.setSet()
+
 class ClickLabel(QLabel):
     def __init__(self, widget, id, text):
         super(ClickLabel, self).__init__(text)
@@ -24,8 +53,6 @@ class MyPushButton(QPushButton):
     def setWidget(widget):
         MyPushButton.widget = widget
         MyPushButton.buttons = {
-            'Top':              widget.Top,
-            'Bottom':              widget.Bottom,
             'Undo':             widget.undo,
             'Redo':             widget.redo,
             'Run':              widget.run,
@@ -58,7 +85,6 @@ class MyPushButton(QPushButton):
 
         super(MyPushButton, self).__init__(text)
         self.text = command
-        # self.widget = widget
         if self.text in config.painterColors:
             self.button = lambda : self.widget.setColor(self.text)
         elif self.text in tools.painterTools:

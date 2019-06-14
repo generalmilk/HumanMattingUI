@@ -64,7 +64,6 @@ for i in range(len(blankSize) - 1)[::-1]:
 buttonScale = (120, 40)
 buttonCol = 3
 
-# imgScale = (750, 475)
 imgScale = (500, 500)
 imgRow = 1
 

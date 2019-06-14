@@ -9,7 +9,7 @@ from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
 from PySide2.QtCore import Slot, Qt, QSize
 from PySide2.QtGui import QPixmap, QImage, QCursor, QFont,QIcon
 
-from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyRadioButton
+from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyRadioButton,HoverButtonTop,HoverButtonBottom
 from utils import numpytoPixmap, ImageInputs, addBlankToLayout
 from matting.solve_foreground_background import solve_foreground_background
 import tools
@@ -19,11 +19,6 @@ from selectDialog import SelectDialog
 
 
 class MyWidget(QWidget):
-    def Top(self):
-        self.setImageAlpha(1)
-
-    def Bottom(self):
-        self.setImageAlpha(0)
     def setImage(self, x, pixmap=None, array=None, resize=False, grid=False):
         assert pixmap is None or not grid, "Pixmap cannot draw grid."
 
@@ -61,9 +56,11 @@ class MyWidget(QWidget):
             self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
 
     def setSet(self):
-        # self.setImage(0, array=self.image)
-        # self.setImage(1, array=self.trimap)
         show = self.image * (1 - self.imageAlpha) + self.trimap * self.imageAlpha
+        self.setImage(0, array=show)
+
+    def setSetToggle(self,Alpha):
+        show = self.image * (1 - Alpha) + self.trimap * Alpha
         self.setImage(0, array=show)
 
     def changeBG(self, bgid):
@@ -397,7 +394,7 @@ class MyWidget(QWidget):
 
         imageLayout.addWidget(imageSourceGroupBox,0,0)
         imageLayout.addWidget(imageResultGroupBox,0,1)
-        
+
         self.hImageGroupBox.setLayout(imageLayout)
 
     def setSlider(self, obj, command):
@@ -486,8 +483,11 @@ class MyWidget(QWidget):
     def initAlphaSliderLayout(self):
         self.vboxAlphaBox = QGroupBox("Image Alpha")
         layout = QVBoxLayout()
-        layout.addWidget(QPushButton("Image"))
-        
+
+        TrimapBtn = HoverButtonTop(self,"Trimap")
+        TrimapBtn.setText('Trimap')
+        layout.addWidget(TrimapBtn)
+
         temp = MySlider(self, 'ImageAlphaSlider', Qt.Vertical)
         self.setSlider(temp, 'ImageAlphaSlider')
         temp.setTickPosition(QSlider.TicksBothSides)
@@ -497,7 +497,10 @@ class MyWidget(QWidget):
         self.setSlider(temp, 'ImageAlphaSlider')
         layout.addWidget(temp)
 
-        layout.addWidget(QPushButton("Trimap"))
+        ImageBtn = HoverButtonBottom(self,"Image")
+        ImageBtn.setText('Image')
+        layout.addWidget(ImageBtn)
+
         self.vboxAlphaBox.setLayout(layout)
 
     def initToolLeftGridLayout(self):
@@ -581,7 +584,7 @@ class MyWidget(QWidget):
                                        "QPushButton{border-radius:10px}"
                                        "QPushButton{padding:2px 4px}")
 
-        layout.setSpacing(10) 
+        layout.setSpacing(10)
         layout.addWidget(self.colorBox,0,0,2,1)
         layout.addWidget(penButton,0,1)
         layout.addWidget(penSlider,0,2,1,4)
@@ -595,7 +598,7 @@ class MyWidget(QWidget):
         layout.addWidget(unknownDownButton,4,1)
         layout.addWidget(runButton,3,4,2,2)
         self.toolLeftGridGroupBox.setLayout(layout)
-    
+
     def initToolRightGridLayout(self):
         bx, by = self.buttonScale
         bC = self.buttonCol
@@ -659,7 +662,7 @@ class MyWidget(QWidget):
                                        "QPushButton{border-radius:10px}"
                                        "QPushButton{padding:2px 4px}")
 
-        # layout.setSpacing(10) 
+        # layout.setSpacing(10)
         layout.addWidget(self.colorBox,0,0,3,1)
         layout.addWidget(previousButton,1,1)
         layout.addWidget(nextButton,1,2)

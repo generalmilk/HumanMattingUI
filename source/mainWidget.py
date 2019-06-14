@@ -90,24 +90,22 @@ class MyWidget(QWidget):
             show = self.changeBackground(alpha)
             self.setImage(i + 3, array=show, resize=True, grid=self.gridFlag)
 
-    def openSelectDialog(self, image, trimaps,imgPath):
+    def openSelectDialog(self, image, trimaps, imgPath):
         imgData = imgPath.split('/')
         imgName = imgData[-1]
         imgId = imgData[-1].split('.')[0]
         imgFolder = imgData[-2]
-        resPath = imgPath[:len(imgPath)-int(len(imgName)+len(imgFolder)+1)]
-        dir_path = [resPath + 'candidates/result/face/%s.png'%imgId]
-        dir_path += [resPath + 'candidates/result/filler_3/%s.png'%imgId]
-        dir_path += [resPath + 'candidates/result/filler_4/%s.png'%imgId]
-        dir_path += [resPath + 'candidates/result/filler_5/%s.png'%imgId]
-        images = []
+        resPath = imgPath[:len(imgPath) - int(len(imgName) + len(imgFolder) + 1)]
+        dir_path = [resPath + 'candidates/result/face/%s.png' % imgId]
+        dir_path += [resPath + 'candidates/result/filler_3/%s.png' % imgId]
+        dir_path += [resPath + 'candidates/result/filler_4/%s.png' % imgId]
+        dir_path += [resPath + 'candidates/result/filler_5/%s.png' % imgId]
+        imageResult = []
         for i in dir_path:
             if os.path.exists(i):
-                images.append(cv2.imread(i))
+                imageResult.append(cv2.imread(i, cv2.IMREAD_UNCHANGED))
 
-        # self.lastImage(self.final, self.foreground)
-
-        self.selectDialog = SelectDialog(image,trimaps,images)
+        self.selectDialog = SelectDialog(image,imageResult)
         if self.selectDialog.exec_():
             return trimaps[self.selectDialog.selectId]
         else:
@@ -358,77 +356,7 @@ class MyWidget(QWidget):
         #     self.setColor("Unknown")
         assert self.tool.toolName == toolName, toolName + " mapping wrong object"
 
-    # def initImageLayout(self):
-    #     imgx, imgy = self.scale
-    #     self.texts = []
-    #     for i in range(2):
-    #         text = ClickLabel(self, i, "None")
-    #         text.setAlignment(Qt.AlignTop)
-    #         text.setFixedSize(QSize(imgx, imgy))
-    #         self.texts.append(text)
 
-    #     # for i, f in enumerate(self.functions):
-    #     #     text = ClickLabel(self, i + 3, "")
-    #     #     text.setAlignment(Qt.AlignTop)
-    #     #     text.setFixedSize(QSize(imgx, imgy))
-    #     #     self.texts.append(text)
-
-    #     text = ClickLabel(self, -1, "")
-    #     text.setAlignment(Qt.AlignTop)
-    #     text.setFixedSize(QSize(imgx, imgy))
-    #     self.texts.append(text)
-
-    #     # self.newSet()
-
-    #     texts = self.texts[:3] + self.texts[-1:]
-
-    #     # row = config.imgRow
-    #     row = 1
-    #     col = (len(texts) + row - 1) // row
-
-    #     self.imageLayout = QHBoxLayout()
-    #     self.imageLayout.addStretch(1)
-
-    #     self.imageLayoutLeft = QVBoxLayout()
-    #     self.imageLayoutLeft.setAlignment(Qt.AlignCenter)
-    #     # self.imageLayoutLeft.addStretch()
-
-    #     self.imageLayoutRight = QHBoxLayout()
-    #     self.imageLayoutRight.addStretch()
-
-    #     for i in range(row):
-    #         rowLayout = QHBoxLayout()
-    #         rowLayout.addStretch(1);
-    #         for j in texts[i * col: (i + 1) * col]:
-    #             rowLayout.addWidget(j)
-    #             rowLayout.setAlignment(Qt.AlignCenter)
-    #             rowLayout.addStretch()
-    #             rowLayout.setContentsMargins(20,20,20,20)
-    #             self.imageLayoutRight.addLayout(rowLayout)
-
-
-
-    #     bx, by = self.buttonScale
-    #     temp = MySlider(self, 'ImageAlphaSlider', Qt.Vertical)
-    #     self.setSlider(temp, 'ImageAlphaSlider')
-    #     temp.setTickPosition(QSlider.TicksBothSides)
-    #     lef, rig, typ = config.sliderConfig['ImageAlphaSlider']
-    #     temp.setSliderType(lef, rig, type=typ)
-    #     temp.setFixedSize(QSize(100, 300))
-    #     # self.setSlider(temp, 'ImageAlphaSlider')
-
-    #     temp_top = MyPushButton(self, config.getText('Top'), 'Top')
-    #     temp_top.setFixedSize(QSize(bx, (by - config.defaultBlank * (1 - 1)) // 1))
-    #     temp_bottom = MyPushButton(self, config.getText('Bottom'), 'Bottom')
-    #     temp_bottom.setFixedSize(QSize(bx, (by - config.defaultBlank * (1 - 1)) // 1))
-
-    #     self.imageLayoutLeft.addWidget(temp_top)
-    #     self.imageLayoutLeft.addWidget(temp)
-    #     self.imageLayoutLeft.addWidget(temp_bottom)
-
-
-    #     self.imageLayout.addLayout(self.imageLayoutLeft)
-    #     self.imageLayout.addLayout(self.imageLayoutRight)
     def initImageLayout(self):
 
         self.hImageGroupBox = QGroupBox("Images")
@@ -554,50 +482,6 @@ class MyWidget(QWidget):
             if len(tempLine) > 0:
                 self.toolWidgets.append(tempLine)
 
-
-        # for line in self.toolWidgets[:5]:
-        #     bR = (len(line) - 1) // bC + 1
-        #     for row in range(bR):
-        #         lineLayout = QHBoxLayout()
-        #         lineLayout.setAlignment(Qt.AlignTop)
-        #         for tool in line[row * bC: (row + 1) * bC]:
-        #             if tool is not None:
-        #                 singleToolLayout = QVBoxLayout()
-        #                 singleToolLayout.setAlignment(Qt.AlignTop)
-        #                 for obj in tool:
-        #                     if obj is not None:
-        #                         singleToolLayout.addWidget(obj)
-        #                         lineLayout.addLayout(singleToolLayout)
-        #         self.toolLayoutLeft.addLayout(lineLayout)
-
-
-
-
-        # for line in self.toolWidgets[2:]:
-        #     bR = (len(line) - 1) // bC + 1
-        #     for row in range(bR):
-        #         lineLayout = QHBoxLayout()
-        #         lineLayout.setAlignment(Qt.AlignTop)
-        #         for tool in line[row * bC: (row + 1) * bC]:
-        #             if tool is not None:
-        #                 singleToolLayout = QVBoxLayout()
-        #                 singleToolLayout.setAlignment(Qt.AlignTop)
-        #                 singleToolLayout.addStretch()
-        #                 for obj in tool:
-        #                     if obj is not None:
-        #                         singleToolLayout.addWidget(obj)
-        #                         lineLayout.addLayout(singleToolLayout)
-        #         self.toolLayoutRight.addLayout(lineLayout)
-
-
-
-        #         # self.toolLayout.addLayout(lineLayout)
-        #         # addBlankToLayout(self.toolLayout, blankSize[0])
-        #     # addBlankToLayout(self.toolLayout, blankSize[1])
-
-
-        # self.toolLayout.addLayout(self.toolLayoutLeft)
-        # self.toolLayout.addLayout(self.toolLayoutRight)
 
     def initAlphaSliderLayout(self):
         self.vboxAlphaBox = QGroupBox("Image Alpha")
@@ -792,6 +676,7 @@ class MyWidget(QWidget):
         self.functions = functions
         self.lastCommand = None
         self.history = []
+        self.reHistory = []
 
         # self.imageList = imageList
         self.scale = config.imgScale
@@ -805,7 +690,6 @@ class MyWidget(QWidget):
         self.pen = tools.painterTools['Pen']
         self.tool = self.filler
         self.tool.setWidget(self)
-        # self.resultTool = tools.Concater()
         self.gridFlag = False
 
         self.fillWidth = 5

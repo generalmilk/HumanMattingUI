@@ -1,6 +1,7 @@
 import cv2
 import os
 import json
+import sys
 import numpy as np
 
 from PySide2.QtGui import QImage, QPixmap
@@ -30,12 +31,9 @@ class ImageInputs:
         self.path = path
         imagePath = path[:-len(folderName)]
 
-        # if not os.path.exists('%s/trimap_candidate'%imagePath):
-        #     os.makedirs('%s/trimap_candidate/1'%imagePath)
-        #     os.makedirs('%s/trimap_candidate/2'%imagePath)
-        #     os.makedirs('%s/trimap_candidate/3'%imagePath)
-        if not os.path.exists('%s/results'%imagePath):
-            os.makedirs('%s/results/alpha'%imagePath)
+        if not os.path.exists('%s/results/alpha'%imagePath):
+            os.makedirs('%s/results/alpha' % imagePath)
+        if not os.path.exists('%s/results/trimap'%imagePath):
             os.makedirs('%s/results/trimap'%imagePath)
 
 
@@ -92,8 +90,7 @@ class ImageInputs:
     def __call__(self):
         self.cnt += 1
         if self.cnt >= self.len:
-            return None
-
+            self.cnt=self.len-1
         imgPaths, triPaths, resPaths,_,triPath = self.list[self.cnt][:5]
         self.nowImg = cv2.imread(imgPaths[0])
         self.candidateTris = []
@@ -116,9 +113,11 @@ class ImageInputs:
         return self.nowImg, self.candidateTris, self.nowAlpha, self.imgName
 
     def previous(self):
-        if self.cnt > 0:
+        if self.cnt >0:
             self.cnt -= 1
             imgPaths, triPaths, resPaths,_,triPath = self.list[self.cnt][:5]
+            if self.cnt==0:
+                self.cnt=1
             self.nowImg = cv2.imread(imgPaths[0])
             self.imgIndexF[self.path] = self.cnt
             with open('../imgIndex', "w") as f:
@@ -139,6 +138,7 @@ class ImageInputs:
             self.imgName = imgPaths[0]
 
             return self.nowImg, self.candidateTris, self.nowAlpha, self.imgName
+
     
     def save(self, trimap):
         triPath = self.list[self.cnt][2][1]
@@ -151,8 +151,8 @@ class ImageInputs:
 
     def saveBoth(self, alpha, foreground):
         alphaPath = self.list[self.cnt][2][0]
-        b_channel, g_channel, r_channel = cv2.split(foreground)
-        a_channel = alpha.mean(axis = 2)
+        b_channel, g_channel, r_channel = cv2.split(foreground.astype('uint8'))
+        a_channel = alpha.mean(axis = 2).astype('uint8')
         img_bgra = cv2.merge((b_channel, g_channel, r_channel, a_channel))
         cv2.imwrite(alphaPath, img_bgra)
 

@@ -1,10 +1,17 @@
 import math
 
 from PySide2.QtWidgets import QLabel, QPushButton, QSlider, QRadioButton, QButtonGroup
-from PySide2.QtGui import QIcon, QPixmap, QColor
-import PySide2.QtCore as QtCore
 import config
 import tools
+
+class BtnLabel(QLabel):
+    def __init__(self, widget, i):
+        super(BtnLabel, self).__init__()
+        self.widget = widget
+        self.i = i
+
+    def mousePressEvent(self, QMouseEvent):
+        self.widget.selectImg(self.i)
 
 
 class HoverButtonTop(QPushButton):
@@ -57,11 +64,12 @@ class MyPushButton(QPushButton):
             'Undo':             widget.undo,
             'Redo':             widget.redo,
             'Run':              widget.run,
-            'Save':             widget.save,
+            # 'Save':             widget.save,
             'SaveAlpha':        widget.saveAlpha,
             'Open':             widget.open,
             'Previous':         lambda : widget.newSet(True),
-            'Next':             widget.popup,
+            'Abandon':          widget.abandon,
+            'Submit':           widget.popup,
             'FillUnknown':      widget.fillUnknown,
             'UnknownUp':        widget.unknownUp,
             'UnknownDown':      widget.unknownDown,
@@ -155,19 +163,11 @@ class MyColorButton(QPushButton):
         self.setCheckable(True)
         self.resize(50,50)
         self.command = command
-        # print(command)
-        # colordict = {"Foreground": "./buttonbackgrounds/foreground.png", "Background": "./buttonbackgrounds/background.png", "Unknown": "./buttonbackgrounds/unknown.png", "Grid": "buttonbackgrounds/checker.png", "Red": "./buttonbackgrounds/red.png", "Green": "./buttonbackgrounds/green.png", "Blue": "./buttonbackgrounds/blue.png"}
         self.texts = self.command.split('&')
-        # self.setIcon(QIcon(QPixmap(colordict[str(self.texts[0])])))
         colordict = {"Foreground": "white", "Background": "black", "Unknown": "#808080", "Grid": "#808080", "Red": "red", "Green": "green", "Blue": "blue"}
         self.setStyleSheet("background-color:"+colordict[str(self.texts[0])])
 
         self.widget = widget
-    # def mouseReleaseEvent(self, QMouseEvent):
-    #     super(MyRadioButton, self).mouseReleaseEvent(QMouseEvent)
-    #     self.widget.setSet()
-    #     self.widget.setResult()
-    #     self.widget.setFinal()
 
 
 class MyButtonGroup(QButtonGroup):
@@ -177,7 +177,7 @@ class MyButtonGroup(QButtonGroup):
         self.texts = self.command.split('&')
         self.widget = widget
         self.commands = {
-            
+
             'Foreground&Background&Unknown':    lambda : self.widget.setColor(self.texts[self.checkedId()]),
             'Grid&Red&Green&Blue':      lambda : self.widget.changeBG(self.checkedId())
         }

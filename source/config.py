@@ -13,7 +13,7 @@ Filler * FillerSlider-
 SolveForeground Undo Redo
 FillUnknown UnknownUp UnknownDown
 Grid&Red&Green&Blue=
-Open Previous Next Run #Save SaveAlpha'''
+Open Previous Submit Abandon Run #Save SaveAlpha'''
 
 # SplitUp|SplitDown ShowGrid UndoAlpha
 buttonKeys = [[tool.split('|') for tool in block.split(' ')] for block in buttonString.split('\n')]

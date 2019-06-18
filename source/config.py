@@ -41,7 +41,7 @@ commandText = {
     'Open':'打开文件',
     'Previous':'上一张',
     'Submit':'提交',
-    'Abandon':'跳过',
+    'Abandon':'放弃修改',
 
     }
 

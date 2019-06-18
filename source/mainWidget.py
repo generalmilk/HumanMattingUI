@@ -196,7 +196,7 @@ class MyWidget(QWidget):
         self.run()
         self.setSet()
         self.setFinal()
-        # self.getGradient()
+        self.getGradient()
         self.setWindowTitle(self.imgName.split('/')[-1])
 
         QApplication.processEvents()

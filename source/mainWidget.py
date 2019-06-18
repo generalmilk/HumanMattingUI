@@ -9,7 +9,7 @@ from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
 from PySide2.QtCore import Slot, Qt, QSize
 from PySide2.QtGui import QPixmap, QImage, QCursor, QFont, QIcon
 
-from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyColorButton, HoverButtonTop, HoverButtonBottom
+from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyToolButton, MyColorButton, HoverButtonTop, HoverButtonBottom
 from utils import numpytoPixmap, ImageInputs, addBlankToLayout
 from matting.solve_foreground_background import solve_foreground_background
 import tools
@@ -561,6 +561,35 @@ class MyWidget(QWidget):
         colorLayout.addWidget(unknownRadio)
         buttonGroup.addRadioButton(unknownRadio, 2)
         self.colorBox.setLayout(colorLayout)
+# ~~~~~
+
+        buttonGroup2 = MyButtonGroup(self, "Pen&Filler")
+        self.colorBox2 = QGroupBox()
+        colorLayout = QVBoxLayout()
+        foregroundRadio = MyToolButton(self, "Pen")
+        foregroundRadio.setIcon(QIcon("icon/icon_1.png"))
+        colorLayout.addWidget(foregroundRadio)
+        buttonGroup2.addRadioButton(foregroundRadio, 0)
+
+        backgroundRadio = MyToolButton(self, "Filler")
+        backgroundRadio.setIcon(QIcon("icon/icon_2.png"))
+        colorLayout.addWidget(backgroundRadio)
+        buttonGroup2.addRadioButton(backgroundRadio, 1)
+        self.colorBox2.setLayout(colorLayout)
+# ~~~~~
+        # drawButtonGroup = MyButtonGroup(self, "Pen&Filler")
+        # self.toolBox = QGroupBox()
+        # colorLayout = QVBoxLayout()
+        # penRadio = MyColorButton(self, "Pen")
+        # foregroundRadio.setIcon(QIcon("icon/icon_1.png"))
+        # colorLayout.addWidget(foregroundRadio)
+        # buttonGroup.addRadioButton(foregroundRadio, 0)
+
+        # fillerRadio = MyColorButton(self, "Filler")
+        # backgroundRadio.setIcon(QIcon("icon/icon_2.png"))
+        # colorLayout.addWidget(backgroundRadio)
+        # buttonGroup.addRadioButton(backgroundRadio, 1)
+
 
         # pen
         penButton = MyPushButton(self, config.getText("Pen"), "Pen")
@@ -612,12 +641,13 @@ class MyWidget(QWidget):
                                 "QPushButton{border:2px}"
                                 "QPushButton{border-radius:10px}"
                                 "QPushButton{padding:2px 4px}")
-
         layout.setSpacing(10)
         layout.addWidget(self.colorBox, 0, 0, 2, 1)
-        layout.addWidget(penButton, 0, 1)
+        layout.addWidget(self.colorBox2, 0, 1, 2.5, 1)
+
+        # layout.addWidget(penButton, 0, 1)
         layout.addWidget(penSlider, 0, 2, 1, 4)
-        layout.addWidget(fillerButton, 1, 1)
+        # layout.addWidget(fillerButton, 1, 1)
         layout.addWidget(fillerSlider, 1, 2, 1, 4)
         layout.addWidget(cleantrimapButton, 2, 0)
         layout.addWidget(undoButton, 2, 1)

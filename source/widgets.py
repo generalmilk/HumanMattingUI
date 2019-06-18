@@ -1,6 +1,8 @@
 import math
 
 from PySide2.QtWidgets import QLabel, QPushButton, QSlider, QRadioButton, QButtonGroup
+from PySide2.QtCore import  Qt
+from PySide2.QtGui import QCursor
 import config
 import tools
 
@@ -103,6 +105,7 @@ class MyPushButton(QPushButton):
         else:
             assert self.text in self.buttons, "MyPushButton " + self.text + " not implement!"
             self.button = self.buttons[self.text]
+        self.setCursor(QCursor(Qt.PointingHandCursor))
 
     def mouseReleaseEvent(self, QMouseEvent):
         super(MyPushButton, self).mouseReleaseEvent(QMouseEvent)
@@ -161,12 +164,24 @@ class MyColorButton(QPushButton):
     def __init__(self, widget, command):
         super(MyColorButton, self).__init__(command)
         self.setCheckable(True)
-        self.resize(50,50)
+        # self.resize(50,50)
         self.command = command
         self.texts = self.command.split('&')
         colordict = {"Foreground": "white", "Background": "black", "Unknown": "#808080", "Grid": "#808080", "Red": "red", "Green": "green", "Blue": "blue"}
-        self.setStyleSheet("background-color:"+colordict[str(self.texts[0])])
+        if self.command == 'Foreground':
+            self.setStyleSheet("background-color:"+colordict[str(self.texts[0])])
+            self.setText('前景')
+        elif self.command == 'Background':
+            self.setText('背景')
+            self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
+        elif self.command == 'Unknown':
+            self.setText('未知')
+            self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
+        else:
+            self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
 
+        # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
+        self.setCursor(QCursor(Qt.PointingHandCursor))
         self.widget = widget
 
 

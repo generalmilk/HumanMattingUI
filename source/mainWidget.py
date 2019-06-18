@@ -248,6 +248,7 @@ class MyWidget(QWidget):
     def solveForeground(self):
         self.setHistory()
         self.trimap = np.ones(self.trimap.shape) * 255
+        # self.setImageAlpha(0)
 
     def showGrid(self):
         self.gridFlag = not self.gridFlag
@@ -642,7 +643,7 @@ class MyWidget(QWidget):
         # Foreground Background Unknown
         buttonGroup = MyButtonGroup(self, "Grid&Red&Green&Blue")
         self.colorBox = QGroupBox("背景色")
-        colorLayout = QVBoxLayout()
+        colorLayout = QHBoxLayout()
         GridRadio = MyColorButton(self, "Grid")
         GridRadio.setIcon(QIcon("icon/icon_1.png"))
         colorLayout.addWidget(GridRadio)
@@ -681,40 +682,40 @@ class MyWidget(QWidget):
         abandonButton.setFixedHeight(40)
         openButton.setFixedHeight(40)
         # saveButton.setFixedHeight(60)
-        previousButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
-                                 "QPushButton:hover{background-color:#008000}"
-                                 "QPushButton{background-color:#008000}"
-                                 "QPushButton{border:2px}"
-                                 "QPushButton{border-radius:10px}"
-                                 "QPushButton{padding:2px 4px}")
         openButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
-                                 "QPushButton:hover{background-color:#000080}"
-                                 "QPushButton{background-color:#000080}"
-                                 "QPushButton{border:2px}"
-                                 "QPushButton{border-radius:10px}"
-                                 "QPushButton{padding:2px 4px}")
-        nextButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
                                  "QPushButton:hover{background-color:#008000}"
                                  "QPushButton{background-color:#008000}"
                                  "QPushButton{border:2px}"
-                                 "QPushButton{border-radius:10px}"
+                                 "QPushButton{border-radius:4px}"
                                  "QPushButton{padding:2px 4px}")
-        abandonButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
+        previousButton.setStyleSheet("QPushButton{color:#444;font-size:18px;}"
+                                 "QPushButton:hover{background-color:#b7b7b7}"
+                                 "QPushButton{background-color:#e7e7e7;border-color: #b7b7b7;}"
+                                 "QPushButton{border:1px solid transparent;}"
+                                 "QPushButton{border-radius:4px}"
+                                 "QPushButton{padding:2px 4px}")
+        nextButton.setStyleSheet("QPushButton{color:#fff;font-size:18px;}"
+                                 "QPushButton:hover{background-color:#337ab7;border-color: #2e6da4;}"
+                                 "QPushButton{background-color:#3c8dbc;border-color: #367fa9;}"
+                                 "QPushButton{border:1px solid transparent;}"
+                                 "QPushButton{border-radius:4px}"
+                                 "QPushButton{padding:2px 4px}")
+        abandonButton.setStyleSheet("QPushButton{color:white;font-size:14px;}"
                                  "QPushButton:hover{background-color:#B22222}"
-                                 "QPushButton{background-color:#B22222}"
+                                 "QPushButton{background-color:#B22222;}"
                                  "QPushButton{border:2px}"
-                                 "QPushButton{border-radius:10px}"
+                                 "QPushButton{border-radius:4px}"
                                  "QPushButton{padding:2px 4px}")
 
         # layout.setSpacing(10)
-        layout.addWidget(self.colorBox, 0, 0, 3, 1)
+        layout.addWidget(self.colorBox, 0, 0, 1, 2)
         # layout.addWidget(previousButton, 1, 1)
         # layout.addWidget(nextButton, 1, 2)
         # layout.addWidget(abandonButton, 1, 3)
-        layout.addWidget(openButton, 3, 0)
-        layout.addWidget(previousButton, 3, 1)
-        layout.addWidget(nextButton, 3, 2)
-        layout.addWidget(abandonButton, 3, 3)
+        layout.addWidget(openButton, 1, 0)
+        layout.addWidget(previousButton, 1, 1)
+        layout.addWidget(nextButton, 2, 0)
+        layout.addWidget(abandonButton, 2, 1)
         self.toolRightGridGroupBox.setLayout(layout)
 
     def __init__(self, functions):
@@ -780,6 +781,12 @@ class MyWidget(QWidget):
 def initialWidget(*args):
     # inp = ImageInputs(inputList)
     app = QApplication(sys.argv)
+
+    # app = QApplication(sys.argv)
+    # font = QFont("微软雅黑",12)
+    # pointsize = font.pointSize()
+    # font.setPixelSize(pointsize*90/72)
+    # app.setFont(font)
 
     widget = MyWidget(functions=args)
     # widget.resize(800, 600)

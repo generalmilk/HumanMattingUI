@@ -80,12 +80,22 @@ class MyWidget(QWidget):
             self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
 
     def setSet(self):
-        show = self.image * (1 - self.imageAlpha) + self.trimap * self.imageAlpha
-        self.setImage(0, array=show)
+        try:
+            show = self.image * (1 - self.imageAlpha) + self.trimap * self.imageAlpha
+            self.setImage(0, array=show)
+        except:
+            pass
+        else:
+            pass
 
     def setSetToggle(self, Alpha):
-        show = self.image * (1 - Alpha) + self.trimap * Alpha
-        self.setImage(0, array=show)
+        try:
+            show = self.image * (1 - Alpha) + self.trimap * Alpha
+            self.setImage(0, array=show)
+        except:
+            pass
+        else:
+            pass
 
     def changeBG(self, bgid):
         self.bgid = bgid
@@ -493,7 +503,9 @@ class MyWidget(QWidget):
 
     def initAlphaSliderLayout(self):
         self.vboxAlphaBox = QGroupBox("Image Alpha")
+        self.vboxAlphaBox.setFixedWidth(120)
         layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignCenter)
 
         TrimapBtn = HoverButtonTop(self,"Trimap")
         TrimapBtn.setText('Trimap')
@@ -505,7 +517,8 @@ class MyWidget(QWidget):
         temp.setTickPosition(QSlider.TicksBothSides)
         lef, rig, typ = config.sliderConfig['ImageAlphaSlider']
         temp.setSliderType(lef, rig, type=typ)
-        temp.setFixedSize(QSize(100, 300))
+        # temp.setFixedSize(QSize(100, 250))
+        temp.setFixedWidth(100)
         self.setSlider(temp, 'ImageAlphaSlider')
         layout.addWidget(temp)
 
@@ -730,7 +743,7 @@ class MyWidget(QWidget):
 
         self.fillWidth = 5
 
-        self.bgid = 0
+        self.bgid = 2
 
         self.outputs = []
         self.final = None

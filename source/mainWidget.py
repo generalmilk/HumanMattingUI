@@ -47,27 +47,27 @@ class MyWidget(QWidget):
             pixmap = pixmap.scaled(imgx, imgy, Qt.KeepAspectRatio)
         self.texts[x].setPixmap(pixmap)
 
-    def setFinal(self,mouse=False):
-        fileName = self.imgName.split('/')
+    def setFinal(self):
+        fileName = self.imgName.split('/')[-1]
+        imagePath = self.imgName[:-len(fileName)]
+        folderName = imagePath.split('/')[-2]
+        # self.path = path
+        # imagePath = path[:-len(folderName)]
+
         if fileName:
-            fileName = fileName[-1].split('.')[0] + '.png'
+            fileName = fileName.split('.')[0] + '.png'
         else:
             fileName = 'None'
 
-        if self.final is None:
+        mouse = self.mouse
+        try:
+            status = self.selectDialog.selectTrue
+        except:
+            status = False
+
+        if self.final is None and not status:
             self.setImage(-1)
-        # elif os.path.exists('results/alpha/'+fileName) and not self.final.any():
-        #     alpha = cv2.imread('results/alpha/' + fileName, cv2.IMREAD_UNCHANGED)
-        #     b, g, r, a = cv2.split(alpha)
-        #     bgr = np.stack([b, g, r], axis=2)
-        #     a = np.stack([a] * 3, axis=2) / 255.0
-        #     show = self.changeBackground( a, True,bgr)
-        #     self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
         else:
-            try:
-                status = self.selectDialog.selectTrue
-            except:
-                status = False
             if status==True:
                 alpha = self.imageResult1[self.selectDialog.selectId]
                 b, g, r, a = cv2.split(alpha)
@@ -75,8 +75,8 @@ class MyWidget(QWidget):
                 a = np.stack([a] * 3, axis=2) / 255.0
                 show = self.changeBackground(a, True, bgr)
                 self.selectDialog.selectTrue = False
-            elif not mouse and os.path.exists('results/alpha/' + fileName):
-                alpha = cv2.imread('results/alpha/' + fileName, cv2.IMREAD_UNCHANGED)
+            elif not mouse and os.path.exists(imagePath[:-len(folderName)-1]+'results/alpha/' + fileName):
+                alpha = cv2.imread(imagePath[:-len(folderName)-1]+'results/alpha/' + fileName, cv2.IMREAD_UNCHANGED)
                 b, g, r, a = cv2.split(alpha)
                 bgr = np.stack([b, g, r], axis=2)
                 a = np.stack([a] * 3, axis=2) / 255.0
@@ -85,6 +85,7 @@ class MyWidget(QWidget):
             else:
                 alpha = self.final.mean(axis=2) / 255.0
                 show = self.changeBackground(alpha,False)
+                self.mouse = False
             self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
 
     def setSet(self):
@@ -104,15 +105,8 @@ class MyWidget(QWidget):
     def changeBG(self, bgid):
         self.bgid = bgid
         self.background = config.getBackground(self.rawSize[::-1], self.bgid)
-        self.setFinal()
         QApplication.processEvents()
-        # try:
-        #     self.bgid = bgid
-        #     self.background = config.getBackground(self.rawSize[::-1], self.bgid)
-        #     self.setFinal()
-        #     QApplication.processEvents()
-        # except:
-        #     pass
+        self.setFinal()
 
     def changeBackground(self, alpha,result,bgr=None):
         if not result:
@@ -156,7 +150,10 @@ class MyWidget(QWidget):
         list_file = QFileDialog.getExistingDirectory(self, 'open dir', '.')
         self.imageList = ImageInputs(list_file)
         self.newSet()
-        self.setImageAlpha(self.imageAlpha)
+        QApplication.processEvents()
+        # self.setImageAlpha(self.imageAlpha)
+
+
 
     def newSet(self, prev=False):
         for text in self.texts:
@@ -193,13 +190,12 @@ class MyWidget(QWidget):
         self.alphaHistory = []
         self.outputs = []
 
-        self.run()
+        # self.run()
         self.setSet()
+        QApplication.processEvents()
         self.setFinal()
         self.getGradient()
         self.setWindowTitle(self.imgName.split('/')[-1])
-
-        QApplication.processEvents()
 
     def popup(self):  # 下一页
         self.saveAlpha()
@@ -221,7 +217,7 @@ class MyWidget(QWidget):
         self.grad = algorithm.calcGradient(self.image)
 
     def resizeToNormal(self):
-        f = 1 / self.f
+        # f = 1 / self.f
         # image = cv2.resize(self.image, self.rawSize)
         image = self.rawImage
         trimap = cv2.resize(self.trimap, self.rawSize, interpolation=cv2.INTER_NEAREST)
@@ -341,6 +337,8 @@ class MyWidget(QWidget):
         # QMessageBox.information(self, "", "sucess", QMessageBox.Yes)
 
     def run(self):
+        self.mouse = True
+        print(self.mouse)
         image, trimap = self.resizeToNormal()
         self.outputs = []
         for i, func in enumerate(self.functions):
@@ -403,7 +401,7 @@ class MyWidget(QWidget):
             text.setFixedSize(QSize(imgx, imgy))
             self.texts.append(text)
 
-        text = ClickLabel(self, -1, "")
+        text = ClickLabel(self, 1, "")
         text.setAlignment(Qt.AlignTop)
         text.setFixedSize(QSize(imgx, imgy))
         self.texts.append(text)
@@ -638,6 +636,7 @@ class MyWidget(QWidget):
         self.toolWidgets = []
 
         self.toolRightGridGroupBox = QGroupBox("Tools")
+        self.toolRightGridGroupBox.setFixedWidth(400)
         layout = QGridLayout()
 
         # Foreground Background Unknown
@@ -721,8 +720,8 @@ class MyWidget(QWidget):
     def __init__(self, functions):
 
         QWidget.__init__(self)
-        self.setMinimumSize(1000, 715)
-        self.setMaximumSize(1000, 715)
+        self.setMinimumSize(1100, 715)
+        self.setMaximumSize(1100, 715)
         self.functions = functions
         self.lastCommand = None
         self.history = []
@@ -745,6 +744,7 @@ class MyWidget(QWidget):
         self.fillWidth = 5
         self.drewAction = 0
         self.bgid = 2
+        self.mouse = False
 
         self.outputs = []
         self.final = None

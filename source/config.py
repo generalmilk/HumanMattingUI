@@ -42,6 +42,7 @@ commandText = {
     'Previous':'上一张',
     'Submit':'提交',
     'Abandon':'跳过',
+
     }
 
 # 渲染按钮对应 text

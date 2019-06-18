@@ -44,7 +44,6 @@ class SelectDialog(QDialog):
 		self.resultLayout = QHBoxLayout() #四个结果图的布局
 		self.selectAlphas = []
 		for i,alpha in enumerate(self.candidateResults):
-			print(i)
 			bg = config.getBackground(size,0)
 			b,g,r,a = cv2.split(alpha)
 			bgr = np.stack([b,g,r], axis=2)

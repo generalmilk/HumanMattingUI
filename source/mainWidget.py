@@ -47,7 +47,7 @@ class MyWidget(QWidget):
             pixmap = pixmap.scaled(imgx, imgy, Qt.KeepAspectRatio)
         self.texts[x].setPixmap(pixmap)
 
-    def setFinal(self):
+    def setFinal(self,mouse=False):
         fileName = self.imgName.split('/')
         if fileName:
             fileName = fileName[-1].split('.')[0] + '.png'
@@ -56,13 +56,13 @@ class MyWidget(QWidget):
 
         if self.final is None:
             self.setImage(-1)
-        elif os.path.exists('results/alpha/'+fileName):
-            alpha = cv2.imread('results/alpha/' + fileName, cv2.IMREAD_UNCHANGED)
-            b, g, r, a = cv2.split(alpha)
-            bgr = np.stack([b, g, r], axis=2)
-            a = np.stack([a] * 3, axis=2) / 255.0
-            show = self.changeBackground([bgr, a], True)
-            self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
+        # elif os.path.exists('results/alpha/'+fileName) and not self.final.any():
+        #     alpha = cv2.imread('results/alpha/' + fileName, cv2.IMREAD_UNCHANGED)
+        #     b, g, r, a = cv2.split(alpha)
+        #     bgr = np.stack([b, g, r], axis=2)
+        #     a = np.stack([a] * 3, axis=2) / 255.0
+        #     show = self.changeBackground( a, True,bgr)
+        #     self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
         else:
             try:
                 status = self.selectDialog.selectTrue
@@ -73,7 +73,15 @@ class MyWidget(QWidget):
                 b, g, r, a = cv2.split(alpha)
                 bgr = np.stack([b, g, r], axis=2)
                 a = np.stack([a] * 3, axis=2) / 255.0
-                show = self.changeBackground([bgr, a], True)
+                show = self.changeBackground(a, True, bgr)
+                self.selectDialog.selectTrue = False
+            elif not mouse and os.path.exists('results/alpha/' + fileName):
+                alpha = cv2.imread('results/alpha/' + fileName, cv2.IMREAD_UNCHANGED)
+                b, g, r, a = cv2.split(alpha)
+                bgr = np.stack([b, g, r], axis=2)
+                a = np.stack([a] * 3, axis=2) / 255.0
+                show = self.changeBackground(a, True, bgr)
+                self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
             else:
                 alpha = self.final.mean(axis=2) / 255.0
                 show = self.changeBackground(alpha,False)
@@ -85,8 +93,6 @@ class MyWidget(QWidget):
             self.setImage(0, array=show)
         except:
             pass
-        else:
-            pass
 
     def setSetToggle(self, Alpha):
         try:
@@ -94,16 +100,21 @@ class MyWidget(QWidget):
             self.setImage(0, array=show)
         except:
             pass
-        else:
-            pass
 
     def changeBG(self, bgid):
         self.bgid = bgid
         self.background = config.getBackground(self.rawSize[::-1], self.bgid)
         self.setFinal()
         QApplication.processEvents()
+        # try:
+        #     self.bgid = bgid
+        #     self.background = config.getBackground(self.rawSize[::-1], self.bgid)
+        #     self.setFinal()
+        #     QApplication.processEvents()
+        # except:
+        #     pass
 
-    def changeBackground(self, alpha, result):
+    def changeBackground(self, alpha,result,bgr=None):
         if not result:
             image, trimap = self.resizeToNormal()
             F, B = solve_foreground_background(image, alpha)
@@ -113,19 +124,11 @@ class MyWidget(QWidget):
             alpha = np.stack([alpha] * 3, axis=2)
             show = F * alpha + (1 - alpha) * self.background
         else:
-            self.foreground = alpha[0]
-            self.final = (alpha[1]*255.0).astype('uint8')
+            self.foreground = bgr
+            self.final = (alpha*255.0).astype('uint8')
             F = self.foreground
-            alpha = alpha[1]
             show = F * alpha + (1 - alpha) * self.background
         return show
-
-    def setResult(self):
-        return
-        for i, output in enumerate(self.outputs):
-            alpha = output.mean(axis=2) / 255.0
-            show = self.changeBackground(alpha)
-            self.setImage(i + 3, array=show, resize=True, grid=self.gridFlag)
 
 
     def openSelectDialog(self, image, trimaps, imgPath):
@@ -193,8 +196,8 @@ class MyWidget(QWidget):
         self.run()
         self.setSet()
         self.setFinal()
-        self.getGradient()
-        self.setWindowTitle(self.imgName)
+        # self.getGradient()
+        self.setWindowTitle(self.imgName.split('/')[-1])
 
         QApplication.processEvents()
 
@@ -248,7 +251,6 @@ class MyWidget(QWidget):
     def solveForeground(self):
         self.setHistory()
         self.trimap = np.ones(self.trimap.shape) * 255
-        # self.setImageAlpha(0)
 
     def showGrid(self):
         self.gridFlag = not self.gridFlag
@@ -507,7 +509,6 @@ class MyWidget(QWidget):
         self.vboxAlphaBox.setFixedWidth(120)
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
-
         TrimapBtn = HoverButtonTop(self,"Trimap")
         TrimapBtn.setText('Trimap')
         layout.addWidget(TrimapBtn)
@@ -518,7 +519,6 @@ class MyWidget(QWidget):
         temp.setTickPosition(QSlider.TicksBothSides)
         lef, rig, typ = config.sliderConfig['ImageAlphaSlider']
         temp.setSliderType(lef, rig, type=typ)
-        # temp.setFixedSize(QSize(100, 250))
         temp.setFixedWidth(100)
         self.setSlider(temp, 'ImageAlphaSlider')
         layout.addWidget(temp)
@@ -743,7 +743,7 @@ class MyWidget(QWidget):
         self.gridFlag = False
 
         self.fillWidth = 5
-
+        self.drewAction = 0
         self.bgid = 2
 
         self.outputs = []
@@ -781,12 +781,6 @@ class MyWidget(QWidget):
 def initialWidget(*args):
     # inp = ImageInputs(inputList)
     app = QApplication(sys.argv)
-
-    # app = QApplication(sys.argv)
-    # font = QFont("微软雅黑",12)
-    # pointsize = font.pointSize()
-    # font.setPixelSize(pointsize*90/72)
-    # app.setFont(font)
 
     widget = MyWidget(functions=args)
     # widget.resize(800, 600)

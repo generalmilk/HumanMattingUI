@@ -37,7 +37,7 @@ class ImageInputs:
             os.makedirs('%s/results/trimap'%imagePath)
 
 
-        dir_path = [imagePath + 'images/']
+        dir_path = [imagePath + '%s/'%folderName]
         dir_path += [imagePath + 'trimaps/']
         dir_path += [imagePath + 'candidates/trimap/face/']
         dir_path += [imagePath + 'candidates/trimap/filler_3/']
@@ -47,7 +47,7 @@ class ImageInputs:
         dir_path += [imagePath + 'results/alpha/']
         dir_path += [imagePath + 'results/trimap/']
         add = ['{}.jpg', '{}.png', '{}.png', '{}.png', '{}.png', '{}.png', '{}.png','{}.png']
-        imgs = [i.split('.')[0] for i in os.listdir(dir_path[0])]
+        imgs = [i.split('.')[0] for i in os.listdir(dir_path[0]) if i.split('.')[1]=='jpg']
         self.imgTotal = len(imgs)
         imgs = sorted(imgs)
         self.list = []
@@ -100,7 +100,10 @@ class ImageInputs:
             self.candidateTris.append(cv2.imread(triPath[0]))
         else:
             for triPath in triPaths:
-                self.candidateTris.append(cv2.imread(triPath))
+                if os.path.exists(triPath):
+                    self.candidateTris.append(cv2.imread(triPath))
+            if not self.candidateTris:
+                self.candidateTris = [np.ones(self.nowImg.shape)*255.0]
         self.nowAlpha = None
         self.imgIndexF[self.path] = self.cnt
         with open('../imgIndex', "w") as f:
@@ -108,16 +111,23 @@ class ImageInputs:
         self.imgName = imgPaths[0]
 
         if os.path.exists(resPaths[0]):
-            self.nowAlpha = cv2.imread(resPaths[0])
+            alpha = cv2.imread(resPaths[0], cv2.IMREAD_UNCHANGED)
+            b, g, r, a = cv2.split(alpha)
+            a = np.stack([a] * 3, axis=2)/255.0
+            self.nowAlpha = a
+
+        # if self.nowAlpha is None:
+        #     self.nowAlpha = np.ones(self.nowImg.shape)*255.0
 
         return self.nowImg, self.candidateTris, self.nowAlpha, self.imgName
 
     def previous(self):
-        if self.cnt >0:
-            self.cnt -= 1
+        self.cnt -= 1
+        if self.cnt < 0:
+            self.cnt = 0
+
+        if self.cnt >=0:
             imgPaths, triPaths, resPaths,_,triPath = self.list[self.cnt][:5]
-            if self.cnt==0:
-                self.cnt=1
             self.nowImg = cv2.imread(imgPaths[0])
             self.imgIndexF[self.path] = self.cnt
             with open('../imgIndex', "w") as f:
@@ -129,12 +139,15 @@ class ImageInputs:
                 self.candidateTris.append(cv2.imread(triPath[0]))
             else:
                 for triPath in triPaths:
-                    self.candidateTris.append(cv2.imread(triPath))
+                    if os.path.exists(triPath):
+                        self.candidateTris.append(cv2.imread(triPath))
+                if not self.candidateTris:
+                    self.candidateTris = [np.ones(self.nowImg.shape)*255.0]
             self.nowAlpha = None
             if os.path.exists(resPaths[0]):
-                self.nowAlpha = cv2.imread(resPaths[0])
-            if self.nowAlpha is None:
-                self.nowAlpha = np.zeros(self.nowImg.shape)
+                self.nowAlpha = [cv2.imread(resPaths[0])]
+            # if self.nowAlpha is None:
+            #     self.nowAlpha = np.ones(self.nowImg.shape)*255.0
             self.imgName = imgPaths[0]
 
             return self.nowImg, self.candidateTris, self.nowAlpha, self.imgName

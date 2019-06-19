@@ -644,14 +644,15 @@ class MyWidget(QWidget):
                                 "QPushButton{border:2px}"
                                 "QPushButton{border-radius:10px}"
                                 "QPushButton{padding:2px 4px}")
-        layout.setSpacing(10)
+        penSlider.setStyleSheet("QSlider{padding:0px 0px}")
+        layout.setSpacing(0)
         layout.addWidget(self.colorBox, 0, 0, 2, 1)
         layout.addWidget(self.colorBox2, 0, 1, 2, 1)
 
         # layout.addWidget(penButton, 0, 1)
-        layout.addWidget(penSlider, 0, 2, 1, 4)
+        layout.addWidget(penSlider, 0, 2, 2, 4)
         # layout.addWidget(fillerButton, 1, 1)
-        layout.addWidget(fillerSlider, 0, 2, 2, 4)
+        layout.addWidget(fillerSlider, 0, 2, 4, 4)
         layout.addWidget(cleantrimapButton, 2, 1)
         layout.addWidget(undoButton, 2, 2)
         layout.addWidget(redoButton, 2, 3)

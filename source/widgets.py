@@ -172,7 +172,6 @@ class MyToolButton(QPushButton):
 
 class MyColorButton(QPushButton):
     def __init__(self, widget, command):
-        print(command)
         super(MyColorButton, self).__init__(command)
         self.setCheckable(True)
         # self.resize(50,50)

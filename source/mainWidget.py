@@ -202,12 +202,16 @@ class MyWidget(QWidget):
         self.newSet()
 
     def abandon(self):
-        fileName = self.imgName.split('/')
-        if fileName:
-            fileName = fileName[-1].split('.')[0]+'.png'
+        imgData = self.imgName.split('/')
+        imgName = imgData[-1]
+        imgFolder = imgData[-2]
+        resPath = self.imgName[:len(self.imgName) - int(len(imgName) + len(imgFolder) + 1)]
+
+        if imgData:
+            fileName = imgName.split('.')[0]+'.png'
         else:
             fileName = 'None'
-        resultFolder = ['results/alpha/','results/trimap/']
+        resultFolder = [resPath+'results/alpha/',resPath+'results/trimap/']
         for path in resultFolder:
             if os.path.exists(path+fileName):
                 os.remove(path+fileName)
@@ -338,7 +342,6 @@ class MyWidget(QWidget):
 
     def run(self):
         self.mouse = True
-        print(self.mouse)
         image, trimap = self.resizeToNormal()
         self.outputs = []
         for i, func in enumerate(self.functions):

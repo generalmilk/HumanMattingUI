@@ -570,14 +570,15 @@ class MyWidget(QWidget):
         self.colorBox2 = QGroupBox()
         colorLayout = QVBoxLayout()
         penRadio = MyToolButton(self, "画笔")
+        penRadio.setIcon(QIcon("icons/brush.png"))
         # penRadio.setIcon(QIcon("icon/icon_1.png"))
         colorLayout.addWidget(penRadio)
         buttonGroup2.addRadioButton(penRadio, 0)
 
-        backgroundRadio = MyToolButton(self, "油漆桶")
-        # backgroundRadio.setIcon(QIcon("icon/icon_2.png"))
-        colorLayout.addWidget(backgroundRadio)
-        buttonGroup2.addRadioButton(backgroundRadio, 1)
+        fillerRadio = MyToolButton(self, "油漆桶")
+        fillerRadio.setIcon(QIcon("icons/filler.png"))
+        colorLayout.addWidget(fillerRadio)
+        buttonGroup2.addRadioButton(fillerRadio, 1)
         self.colorBox2.setLayout(colorLayout)
 # ~~~~~
         # drawButtonGroup = MyButtonGroup(self, "Pen&Filler")
@@ -620,10 +621,11 @@ class MyWidget(QWidget):
 
         # clean trimap
         cleantrimapButton = MyPushButton(self, config.getText("SolveForeground"), "SolveForeground")
-
+        cleantrimapButton.setIcon(QIcon("icons/clearscreen.png"))
         undoButton = MyPushButton(self, config.getText("Undo"), "Undo")
+        undoButton.setIcon(QIcon("icons/undo.png"))
         redoButton = MyPushButton(self, config.getText("Redo"), "Redo")
-
+        redoButton.setIcon(QIcon("icons/redo.png"))
         # cleantrimapButton.setFixedSize(QSize(80,40))
 
         fileUnknownButton = MyPushButton(self, config.getText("FillUnknown"), "FillUnknown")

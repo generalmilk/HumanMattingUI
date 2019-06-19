@@ -387,11 +387,11 @@ class MyWidget(QWidget):
 
     def initImageLayout(self):
 
-        self.hImageGroupBox = QGroupBox("Images")
+        self.hImageGroupBox = QGroupBox()
         imageLayout = QGridLayout()
 
-        imageSourceGroupBox = QGroupBox("Source")
-        imageResultGroupBox = QGroupBox("Result")
+        imageSourceGroupBox = QGroupBox()
+        imageResultGroupBox = QGroupBox()
 
         imgx, imgy = self.scale
         self.texts = []
@@ -503,12 +503,12 @@ class MyWidget(QWidget):
                 self.toolWidgets.append(tempLine)
 
     def initAlphaSliderLayout(self):
-        self.vboxAlphaBox = QGroupBox("Image Alpha")
+        self.vboxAlphaBox = QGroupBox()
         self.vboxAlphaBox.setFixedWidth(120)
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
         TrimapBtn = HoverButtonTop(self,"Trimap")
-        TrimapBtn.setText('Trimap')
+        TrimapBtn.setText('蒙板')
         layout.addWidget(TrimapBtn)
         TrimapBtn.clicked.connect(lambda:self.Trimap_click(1))
 
@@ -522,7 +522,7 @@ class MyWidget(QWidget):
         layout.addWidget(temp)
 
         ImageBtn = HoverButtonBottom(self,"Image")
-        ImageBtn.setText('Image')
+        ImageBtn.setText('原图')
         layout.addWidget(ImageBtn)
         ImageBtn.clicked.connect(lambda:self.Image_click(0))
 
@@ -539,7 +539,7 @@ class MyWidget(QWidget):
         bC = self.buttonCol
         blankSize = self.blankSize
 
-        self.toolLeftGridGroupBox = QGroupBox("Tools")
+        self.toolLeftGridGroupBox = QGroupBox()
         layout = QGridLayout()
 
         # Foreground Background Unknown
@@ -566,12 +566,12 @@ class MyWidget(QWidget):
         buttonGroup2 = MyButtonGroup(self, "Pen&Filler")
         self.colorBox2 = QGroupBox()
         colorLayout = QVBoxLayout()
-        penRadio = MyToolButton(self, "Pen")
+        penRadio = MyToolButton(self, "画笔")
         # penRadio.setIcon(QIcon("icon/icon_1.png"))
         colorLayout.addWidget(penRadio)
         buttonGroup2.addRadioButton(penRadio, 0)
 
-        backgroundRadio = MyToolButton(self, "Filler")
+        backgroundRadio = MyToolButton(self, "油漆桶")
         # backgroundRadio.setIcon(QIcon("icon/icon_2.png"))
         colorLayout.addWidget(backgroundRadio)
         buttonGroup2.addRadioButton(backgroundRadio, 1)
@@ -665,13 +665,13 @@ class MyWidget(QWidget):
 
         self.toolWidgets = []
 
-        self.toolRightGridGroupBox = QGroupBox("Tools")
+        self.toolRightGridGroupBox = QGroupBox()
         self.toolRightGridGroupBox.setFixedWidth(400)
         layout = QGridLayout()
 
         # Foreground Background Unknown
         buttonGroup = MyButtonGroup(self, "Grid&Red&Green&Blue")
-        self.colorBox = QGroupBox("背景色")
+        self.colorBox = QGroupBox()
         colorLayout = QHBoxLayout()
         GridRadio = MyColorButton(self, "Grid")
         GridRadio.setIcon(QIcon(QPixmap("iconss/grid.png")))
@@ -729,7 +729,7 @@ class MyWidget(QWidget):
                                  "QPushButton{border:1px solid transparent;}"
                                  "QPushButton{border-radius:4px}"
                                  "QPushButton{padding:2px 4px}")
-        abandonButton.setStyleSheet("QPushButton{color:white;font-size:14px;}"
+        abandonButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
                                  "QPushButton:hover{background-color:#B22222}"
                                  "QPushButton{background-color:#B22222;}"
                                  "QPushButton{border:2px}"

@@ -31,7 +31,7 @@ commandText = {
     'SplitDown': 'Split Down',
     'ShowGrid': 'Show Grid',
     'UndoAlpha': 'Undo Alpha',
-    'SolveForeground': '清除蒙版',
+    'SolveForeground': '清空蒙板',
     'ChangeBG': 'Change Background',
     'Undo':'上一步',
     'Redo':'下一步',
@@ -41,8 +41,7 @@ commandText = {
     'Open':'打开文件',
     'Previous':'上一张',
     'Submit':'提交',
-    'Abandon':'放弃修改',
-
+    'Abandon':'放弃修改'
     }
 
 # 渲染按钮对应 text

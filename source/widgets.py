@@ -179,17 +179,18 @@ class MyColorButton(QPushButton):
         self.command = command
         self.texts = self.command.split('&')
         colordict = {"Foreground": "white", "Background": "black", "Unknown": "#808080", "Grid": "#808080", "Red": "red", "Green": "green", "Blue": "blue", "Pen": "orange", "Filler": "yellow"}
+        self.setStyleSheet("background-color:gainsboro")
         if self.command == 'Foreground':
-            self.setStyleSheet("background-color:"+colordict[str(self.texts[0])])
+            # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])])
             self.setText('前景')
         elif self.command == 'Background':
             self.setText('背景')
-            self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
+            # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
         elif self.command == 'Unknown':
             self.setText('未知')
-            self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
-        else:
-            self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
+            # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
+        # else:
+        #     self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
 
         # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
         self.setCursor(QCursor(Qt.PointingHandCursor))

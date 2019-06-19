@@ -33,15 +33,15 @@ commandText = {
     'UndoAlpha': 'Undo Alpha',
     'SolveForeground': '清空蒙板',
     'ChangeBG': 'Change Background',
-    'Undo':'上一步',
-    'Redo':'下一步',
+    'Undo':'撤销',
+    'Redo':'重做',
     'Pen':'笔',
     'Filler':'油漆桶',
     'Run':'运行',
     'Open':'打开文件',
     'Previous':'上一张',
     'Submit':'提交',
-    'Abandon':'放弃修改'
+    'Abandon':'放弃'
     }
 
 # 渲染按钮对应 text

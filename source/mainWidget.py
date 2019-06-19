@@ -623,16 +623,14 @@ class MyWidget(QWidget):
 
         undoButton = MyPushButton(self, config.getText("Undo"), "Undo")
         redoButton = MyPushButton(self, config.getText("Redo"), "Redo")
-        redoButton.setFixedSize(QSize(80, 40))
-        undoButton.setFixedSize(QSize(80, 40))
+
         # cleantrimapButton.setFixedSize(QSize(80,40))
-        cleantrimapButton.setFixedHeight(40)
 
         fileUnknownButton = MyPushButton(self, config.getText("FillUnknown"), "FillUnknown")
         unknownUpButton = MyPushButton(self, config.getText("UnknownUp"), "UnknownUp")
         unknownDownButton = MyPushButton(self, config.getText("UnknownDown"), "UnknownDown")
         # fileUnknownButton.setFixedSize(QSize(self.width(),40))
-        fileUnknownButton.setFixedHeight(60)
+        #fileUnknownButton.setFixedHeight(60)
         # unknownUpButton.setFixedHeight(40)
         # unknownUpButton.setFixedSize(QSize(self.width(),40))
 
@@ -658,8 +656,8 @@ class MyWidget(QWidget):
         layout.addWidget(redoButton, 2, 3)
         layout.addWidget(fileUnknownButton, 3, 0, 2, 1)
         layout.addWidget(unknownUpButton, 3, 1)
-        layout.addWidget(unknownDownButton, 4, 1)
-        layout.addWidget(runButton, 3, 4, 2, 2)
+        layout.addWidget(unknownDownButton, 3, 2)
+        layout.addWidget(runButton, 2, 4, 2, 2)
         self.toolLeftGridGroupBox.setLayout(layout)
 
     def initToolRightGridLayout(self):

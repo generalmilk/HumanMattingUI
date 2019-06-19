@@ -187,6 +187,14 @@ class MyColorButton(QPushButton):
             # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
         elif self.command == 'Unknown':
             self.setText('未知')
+        elif self.command == "Grid":
+            self.setText('棋盘')
+        elif self.command == "Red":
+            self.setText('红')
+        elif self.command == "Green":
+            self.setText('绿')
+        elif self.command == "Blue":
+            self.setText('蓝')
             # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
         # else:
         #     self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")

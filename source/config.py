@@ -41,7 +41,7 @@ commandText = {
     'Open':'打开文件',
     'Previous':'上一张',
     'Submit':'提交',
-    'Abandon':'放弃修改'
+    'Abandon':'放弃'
     }
 
 # 渲染按钮对应 text

@@ -42,7 +42,10 @@ class MyWidget(QWidget):
                 resize = False
 
             pixmap = numpytoPixmap(array)
-        imgx, imgy = self.scale
+        if pixmap.width() <= 400 and pixmap.height() <= 400 :
+            imgx, imgy = (pixmap.width(),pixmap.height())
+        else:
+            imgx, imgy = self.scale
         if resize:
             pixmap = pixmap.scaled(imgx, imgy, Qt.KeepAspectRatio)
         self.texts[x].setPixmap(pixmap)
@@ -181,7 +184,10 @@ class MyWidget(QWidget):
         assert self.image.shape == self.trimap.shape
 
         h, w = self.image.shape[:2]
-        imgw, imgh = self.scale
+        if h <= 400 and w <= 400 :
+            imgw, imgh = (w,h)
+        else:
+            imgw, imgh = self.scale
         self.f = min(imgw / w, imgh / h)
         self.rawSize = (w, h)
         self.rawImage = self.image
@@ -260,7 +266,7 @@ class MyWidget(QWidget):
 
     def setImageAlpha(self, num):
         self.imageAlpha = num
-        self.setSet()
+        # self.setSet()
         self.imageAlphaSlider.setValue(num)
         QApplication.processEvents()
 
@@ -404,20 +410,22 @@ class MyWidget(QWidget):
         for i in range(1):
             text = ClickLabel(self, i, "None")
             text.setAlignment(Qt.AlignTop)
-            text.setFixedSize(QSize(imgx, imgy))
+            # text.setFixedSize(QSize(imgx, imgy))
             self.texts.append(text)
 
         text = ClickLabel(self, 1, "")
         text.setAlignment(Qt.AlignTop)
-        text.setFixedSize(QSize(imgx, imgy))
+        # text.setFixedSize(QSize(imgx, imgy))
         self.texts.append(text)
 
         texts = self.texts[:3] + self.texts[-1:]
 
         imageSourceLayout = QHBoxLayout()
+        imageSourceLayout.setAlignment(Qt.AlignCenter)
         imageSourceLayout.addWidget(texts[0])
         imageSourceGroupBox.setLayout(imageSourceLayout)
         imageResultLayout = QHBoxLayout()
+        imageResultLayout.setAlignment(Qt.AlignCenter)
         imageResultLayout.addWidget(texts[1])
         imageResultGroupBox.setLayout(imageResultLayout)
 
@@ -661,9 +669,9 @@ class MyWidget(QWidget):
         layout.addWidget(self.colorBox2, 0, 1, 2, 1)
 
         # layout.addWidget(penButton, 0, 1)
-        layout.addWidget(penSlider, 0, 2, 2, 4)
+        layout.addWidget(penSlider, 0, 2, 1, 4)
         # layout.addWidget(fillerButton, 1, 1)
-        layout.addWidget(fillerSlider, 0, 2, 4, 4)
+        layout.addWidget(fillerSlider, 1, 2, 1, 4)
         layout.addWidget(cleantrimapButton, 2, 0)
         layout.addWidget(undoButton, 2, 1)
         layout.addWidget(redoButton, 2, 2)
@@ -806,7 +814,7 @@ class MyWidget(QWidget):
         self.initToolLeftGridLayout()
         self.initToolRightGridLayout()
 
-        # self.setImageAlpha(self.imageAlpha)
+        self.setImageAlpha(self.imageAlpha)
         self.setFiller(self.filler.getTheta())
         self.setPen(5)
         self.trimapButtonGroup.button(1).setChecked(True)

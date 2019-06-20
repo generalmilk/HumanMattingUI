@@ -73,7 +73,7 @@ for i in range(len(blankSize) - 1)[::-1]:
 buttonScale = (120, 40)
 buttonCol = 3
 
-imgScale = (300, 300)
+imgScale = (400, 400)
 imgRow = 1
 
 defaultSplit = 3

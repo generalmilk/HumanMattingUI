@@ -578,7 +578,7 @@ class MyWidget(QWidget):
         colorLayout.addWidget(penRadio)
         buttonGroup2.addRadioButton(penRadio, 0)
 
-        fillerRadio = MyToolButton(self, "油漆桶 (W)")
+        fillerRadio = MyToolButton(self, "填充 (W)")
         fillerRadio.setIcon(QIcon("icons/filler.png"))
         fillerRadio.setShortcut("w")
         colorLayout.addWidget(fillerRadio)

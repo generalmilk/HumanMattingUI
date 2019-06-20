@@ -56,9 +56,9 @@ class MyWidget(QWidget):
         folderName = imagePath.split('/')[-2]
         imageResultName = re.findall('data_(\d*)', imagePath.split('/')[-3])
         if bool(imageResultName):
-            resultImgPath = 'result_' + imageResultName[0]
+            self.resultImgPath = 'result_' + imageResultName[0]
         else:
-            resultImgPath = 'result'
+            self.resultImgPath = 'result'
 
         if fileName:
             fileName = fileName.split('.')[0] + '.png'
@@ -81,8 +81,8 @@ class MyWidget(QWidget):
                 a = np.stack([a] * 3, axis=2) / 255.0
                 show = self.changeBackground(a, True, bgr)
                 self.selectDialog.selectTrue = False
-            elif not mouse and os.path.exists(imagePath[:-len(folderName)-1]+'%s/alpha/'%resultImgPath + fileName):
-                alpha = cv2.imread(imagePath[:-len(folderName)-1]+'%s/alpha/'%resultImgPath + fileName, cv2.IMREAD_UNCHANGED)
+            elif not mouse and os.path.exists(imagePath[:-len(folderName)-1]+'%s/alpha/'%self.resultImgPath + fileName):
+                alpha = cv2.imread(imagePath[:-len(folderName)-1]+'%s/alpha/'%self.resultImgPath + fileName, cv2.IMREAD_UNCHANGED)
                 b, g, r, a = cv2.split(alpha)
                 bgr = np.stack([b, g, r], axis=2)
                 a = np.stack([a] * 3, axis=2) / 255.0
@@ -220,7 +220,7 @@ class MyWidget(QWidget):
             fileName = imgName.split('.')[0]+'.png'
         else:
             fileName = 'None'
-        resultFolder = [resPath+'results/alpha/',resPath+'results/trimap/']
+        resultFolder = [resPath+'%s/alpha/'%self.resultImgPath,resPath+'%s/trimap/'%self.resultImgPath]
         for path in resultFolder:
             if os.path.exists(path+fileName):
                 os.remove(path+fileName)
@@ -266,7 +266,7 @@ class MyWidget(QWidget):
 
     def setImageAlpha(self, num):
         self.imageAlpha = num
-        # self.setSet()
+        self.setSet()
         self.imageAlphaSlider.setValue(num)
         QApplication.processEvents()
 

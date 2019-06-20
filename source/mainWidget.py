@@ -5,7 +5,7 @@ import numpy as np
 import cv2,re
 
 from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
-                               QHBoxLayout, QSlider, QFileDialog, QMessageBox, QGroupBox, QGridLayout, QPushButton)
+                               QHBoxLayout, QSlider, QFileDialog, QMessageBox, QGroupBox, QGridLayout, QPushButton,QLabel)
 from PySide2.QtCore import Slot, Qt, QSize
 from PySide2.QtGui import QPixmap, QImage, QCursor, QFont, QIcon
 
@@ -165,16 +165,13 @@ class MyWidget(QWidget):
         for text in self.texts:
             text.setPixmap(None)
         if prev:
-            self.image, self.trimaps, self.final, self.imgName = self.imageList.previous()
+            self.image, self.trimaps, self.final, self.imgName,self.cnt,self.len = self.imageList.previous()
             if len(self.trimaps) == 1:
                 self.trimap = self.trimaps[0]
             else:
                 self.trimap = self.openSelectDialog(self.image, self.trimaps, self.imgName)
         else:
-            try:
-                self.image, self.trimaps, self.final, self.imgName = self.imageList()
-            except:
-                return None
+            self.image, self.trimaps, self.final, self.imgName,self.cnt,self.len = self.imageList()
             if len(self.trimaps) == 1:
                 self.trimap = self.trimaps[0]
             else:
@@ -201,6 +198,7 @@ class MyWidget(QWidget):
 
         # self.run()
         self.setSet()
+        self.pageLabel.setText('%s/%s'%(int(self.cnt)+1,self.len))
         QApplication.processEvents()
         self.setFinal()
         self.getGradient()
@@ -432,6 +430,10 @@ class MyWidget(QWidget):
         imageLayout.addWidget(imageSourceGroupBox, 0, 0)
         imageLayout.addWidget(imageResultGroupBox, 0, 1)
 
+        self.pageLabel = QLabel('0 / 0')
+        self.pageLabel.setFixedHeight(10)
+        self.pageLabel.setAlignment(Qt.AlignCenter)
+        imageLayout.addWidget(self.pageLabel, 1, 0)
         self.hImageGroupBox.setLayout(imageLayout)
 
     def setSlider(self, obj, command):
@@ -801,6 +803,9 @@ class MyWidget(QWidget):
         self.drewAction = 0
         self.bgid = 2
         self.mouse = False
+        self.cnt = 1
+        self.len = 1
+
 
         self.outputs = []
         self.final = None

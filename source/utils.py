@@ -122,7 +122,7 @@ class ImageInputs:
         # if self.nowAlpha is None:
         #     self.nowAlpha = np.ones(self.nowImg.shape)*255.0
 
-        return self.nowImg, self.candidateTris, self.nowAlpha, self.imgName
+        return self.nowImg, self.candidateTris, self.nowAlpha, self.imgName,self.cnt,self.len
 
     def previous(self):
         self.cnt -= 1
@@ -153,7 +153,7 @@ class ImageInputs:
             #     self.nowAlpha = np.ones(self.nowImg.shape)*255.0
             self.imgName = imgPaths[0]
 
-            return self.nowImg, self.candidateTris, self.nowAlpha, self.imgName
+            return self.nowImg, self.candidateTris, self.nowAlpha, self.imgName,self.cnt,self.len
 
     
     def save(self, trimap):

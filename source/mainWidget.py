@@ -2,7 +2,7 @@ import sys
 import json
 import os, copy
 import numpy as np
-import cv2
+import cv2,re
 
 from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
                                QHBoxLayout, QSlider, QFileDialog, QMessageBox, QGroupBox, QGridLayout, QPushButton)
@@ -51,8 +51,11 @@ class MyWidget(QWidget):
         fileName = self.imgName.split('/')[-1]
         imagePath = self.imgName[:-len(fileName)]
         folderName = imagePath.split('/')[-2]
-        # self.path = path
-        # imagePath = path[:-len(folderName)]
+        imageResultName = re.findall('data_(\d*)', imagePath.split('/')[-3])
+        if bool(imageResultName):
+            resultImgPath = 'result_' + imageResultName[0]
+        else:
+            resultImgPath = 'result'
 
         if fileName:
             fileName = fileName.split('.')[0] + '.png'
@@ -75,8 +78,8 @@ class MyWidget(QWidget):
                 a = np.stack([a] * 3, axis=2) / 255.0
                 show = self.changeBackground(a, True, bgr)
                 self.selectDialog.selectTrue = False
-            elif not mouse and os.path.exists(imagePath[:-len(folderName)-1]+'results/alpha/' + fileName):
-                alpha = cv2.imread(imagePath[:-len(folderName)-1]+'results/alpha/' + fileName, cv2.IMREAD_UNCHANGED)
+            elif not mouse and os.path.exists(imagePath[:-len(folderName)-1]+'%s/alpha/'%resultImgPath + fileName):
+                alpha = cv2.imread(imagePath[:-len(folderName)-1]+'%s/alpha/'%resultImgPath + fileName, cv2.IMREAD_UNCHANGED)
                 b, g, r, a = cv2.split(alpha)
                 bgr = np.stack([b, g, r], axis=2)
                 a = np.stack([a] * 3, axis=2) / 255.0

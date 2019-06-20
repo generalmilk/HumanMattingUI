@@ -1,7 +1,7 @@
 import cv2
 import os
 import json
-import sys
+import sys,re
 import numpy as np
 
 from PySide2.QtGui import QImage, QPixmap
@@ -30,22 +30,25 @@ class ImageInputs:
         folderName = path.split('/')[-1]
         self.path = path
         imagePath = path[:-len(folderName)]
+        imageResultName = re.findall('data_(\d*)', imagePath.split('/')[-2])
+        if bool(imageResultName):
+            resultImgPath = 'result_' + imageResultName[0]
+        else:
+            resultImgPath = 'result'
+        if not os.path.exists('%s/%s/alpha' % (imagePath, resultImgPath)):
+            os.makedirs('%s/%s/alpha' % (imagePath, resultImgPath))
+        if not os.path.exists('%s/%s/trimap' % (imagePath, resultImgPath)):
+            os.makedirs('%s/%s/trimap' % (imagePath, resultImgPath))
 
-        if not os.path.exists('%s/results/alpha'%imagePath):
-            os.makedirs('%s/results/alpha' % imagePath)
-        if not os.path.exists('%s/results/trimap'%imagePath):
-            os.makedirs('%s/results/trimap'%imagePath)
-
-
-        dir_path = [imagePath + '%s/'%folderName]
+        dir_path = [imagePath + '%s/' % folderName]
         dir_path += [imagePath + 'trimaps/']
         dir_path += [imagePath + 'candidates/trimap/face/']
         dir_path += [imagePath + 'candidates/trimap/filler_3/']
         dir_path += [imagePath + 'candidates/trimap/filler_4/']
         dir_path += [imagePath + 'candidates/trimap/filler_5/']
 
-        dir_path += [imagePath + 'results/alpha/']
-        dir_path += [imagePath + 'results/trimap/']
+        dir_path += [imagePath + '%s/alpha/' % resultImgPath]
+        dir_path += [imagePath + '%s/trimap/' % resultImgPath]
         add = ['{}.jpg', '{}.png', '{}.png', '{}.png', '{}.png', '{}.png', '{}.png','{}.png']
         imgs = [i.split('.')[0] for i in os.listdir(dir_path[0]) if i.split('.')[1]=='jpg']
         self.imgTotal = len(imgs)
@@ -73,8 +76,8 @@ class ImageInputs:
             self.list.append(path_list)
 
         self.imgIndexF = {}
-        if os.path.exists('../imgIndex'):
-            with open('../imgIndex', "r", encoding='utf-8') as f:
+        if os.path.exists('imgIndex'):
+            with open('imgIndex', "r", encoding='utf-8') as f:
                 self.imgIndexF = json.load(f)
                 imgIndex = self.imgIndexF.get(self.path)
                 if not imgIndex:
@@ -106,7 +109,7 @@ class ImageInputs:
                 self.candidateTris = [np.ones(self.nowImg.shape)*255.0]
         self.nowAlpha = None
         self.imgIndexF[self.path] = self.cnt
-        with open('../imgIndex', "w") as f:
+        with open('imgIndex', "w") as f:
             json.dump(self.imgIndexF, f)
         self.imgName = imgPaths[0]
 
@@ -130,7 +133,7 @@ class ImageInputs:
             imgPaths, triPaths, resPaths,_,triPath = self.list[self.cnt][:5]
             self.nowImg = cv2.imread(imgPaths[0])
             self.imgIndexF[self.path] = self.cnt
-            with open('../imgIndex', "w") as f:
+            with open('imgIndex', "w") as f:
                 json.dump(self.imgIndexF, f)
             self.candidateTris = []
             if os.path.exists(resPaths[1]):

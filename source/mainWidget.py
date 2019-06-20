@@ -5,9 +5,9 @@ import numpy as np
 import cv2,re
 
 from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
-                               QHBoxLayout, QSlider, QFileDialog, QMessageBox, QGroupBox, QGridLayout, QPushButton,QLabel)
+                               QHBoxLayout, QSlider, QFileDialog, QMessageBox, QGroupBox, QGridLayout, QPushButton, QLabel, QShortcut)
 from PySide2.QtCore import Slot, Qt, QSize
-from PySide2.QtGui import QPixmap, QImage, QCursor, QFont, QIcon
+from PySide2.QtGui import QPixmap, QImage, QCursor, QFont, QIcon, QKeySequence
 
 from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyToolButton, MyColorButton, HoverButtonTop, HoverButtonBottom
 from utils import numpytoPixmap, ImageInputs, addBlankToLayout
@@ -639,12 +639,19 @@ class MyWidget(QWidget):
         # clean trimap
         cleantrimapButton = MyPushButton(self, config.getText("SolveForeground"), "SolveForeground")
         cleantrimapButton.setIcon(QIcon("icons/clearscreen.png"))
+        # cleanShortut = QShortcut(QKeySequence("Ctrl+C"), self)
+        # cleanShortcut.activated.connect(self.clear)
         undoButton = MyPushButton(self, config.getText("Undo"), "Undo")
         undoButton.setIcon(QIcon("icons/undo.png"))
-        undoButton.setShortcut("Ctrl+Z")
+        # undoButton.setShortcut("Ctrl+Z")
+        undoShortcut = QShortcut(QKeySequence("Ctrl+Z"), self)
+        undoShortcut.activated.connect(self.undo)
         redoButton = MyPushButton(self, config.getText("Redo"), "Redo")
         redoButton.setIcon(QIcon("icons/redo.png"))
-        redoButton.setShortcut("Ctrl+Y")
+        # redoButton.setShortcut("Ctrl+Y")
+        redoShortcut = QShortcut(QKeySequence("Ctrl+Y"), self)
+        redoShortcut.activated.connect(self.redo)
+
 
         # cleantrimapButton.setFixedSize(QSize(80,40))
 
@@ -657,6 +664,8 @@ class MyWidget(QWidget):
         # unknownUpButton.setFixedSize(QSize(self.width(),40))
 
         runButton = MyPushButton(self, config.getText("Run"), "Run")
+        # runShortcut = QShortcut(QKeySequence("Ctrl+R"), self)
+        # runShortcut.activated.connect(self.run)
         runButton.setFixedHeight(60)
         runButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
                                 "QPushButton:hover{background-color:#05f}"

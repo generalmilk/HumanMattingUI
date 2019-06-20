@@ -181,12 +181,12 @@ class MyColorButton(QPushButton):
         self.setStyleSheet("background-color:gainsboro")
         if self.command == 'Foreground':
             # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])])
-            self.setText('前景')
+            self.setText('前景 (1)')
         elif self.command == 'Background':
-            self.setText('背景')
+            self.setText('背景 (2)')
             # self.setStyleSheet("background-color:"+colordict[str(self.texts[0])]+";color:white")
         elif self.command == 'Unknown':
-            self.setText('未知')
+            self.setText('未知 (3)')
         elif self.command == "Grid":
             self.setText('棋盘')
         elif self.command == "Red":

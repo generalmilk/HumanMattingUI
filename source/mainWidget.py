@@ -551,16 +551,19 @@ class MyWidget(QWidget):
         colorLayout = QVBoxLayout()
         foregroundRadio = MyColorButton(self, "Foreground")
         foregroundRadio.setIcon(QIcon("icon/icon_1.png"))
+        foregroundRadio.setShortcut("1")
         colorLayout.addWidget(foregroundRadio)
         buttonGroup.addRadioButton(foregroundRadio, 0)
 
         backgroundRadio = MyColorButton(self, "Background")
         backgroundRadio.setIcon(QIcon("icon/icon_2.png"))
+        backgroundRadio.setShortcut("2")
         colorLayout.addWidget(backgroundRadio)
         buttonGroup.addRadioButton(backgroundRadio, 1)
 
         unknownRadio = MyColorButton(self, "Unknown")
         unknownRadio.setIcon(QIcon("icon/icon_3.png"))
+        unknownRadio.setShortcut("3")
         colorLayout.addWidget(unknownRadio)
         buttonGroup.addRadioButton(unknownRadio, 2)
         self.colorBox.setLayout(colorLayout)
@@ -569,14 +572,15 @@ class MyWidget(QWidget):
         buttonGroup2 = MyButtonGroup(self, "Pen&Filler")
         self.colorBox2 = QGroupBox()
         colorLayout = QVBoxLayout()
-        penRadio = MyToolButton(self, "画笔")
+        penRadio = MyToolButton(self, "画笔 (Q)")
         penRadio.setIcon(QIcon("icons/brush.png"))
-        # penRadio.setIcon(QIcon("icon/icon_1.png"))
+        penRadio.setShortcut("q")
         colorLayout.addWidget(penRadio)
         buttonGroup2.addRadioButton(penRadio, 0)
 
-        fillerRadio = MyToolButton(self, "油漆桶")
+        fillerRadio = MyToolButton(self, "油漆桶 (W)")
         fillerRadio.setIcon(QIcon("icons/filler.png"))
+        fillerRadio.setShortcut("w")
         colorLayout.addWidget(fillerRadio)
         buttonGroup2.addRadioButton(fillerRadio, 1)
         self.colorBox2.setLayout(colorLayout)
@@ -624,8 +628,11 @@ class MyWidget(QWidget):
         cleantrimapButton.setIcon(QIcon("icons/clearscreen.png"))
         undoButton = MyPushButton(self, config.getText("Undo"), "Undo")
         undoButton.setIcon(QIcon("icons/undo.png"))
+        undoButton.setShortcut("Ctrl+Z")
         redoButton = MyPushButton(self, config.getText("Redo"), "Redo")
         redoButton.setIcon(QIcon("icons/redo.png"))
+        redoButton.setShortcut("Ctrl+Y")
+
         # cleantrimapButton.setFixedSize(QSize(80,40))
 
         fileUnknownButton = MyPushButton(self, config.getText("FillUnknown"), "FillUnknown")
@@ -644,6 +651,7 @@ class MyWidget(QWidget):
                                 "QPushButton{border:2px}"
                                 "QPushButton{border-radius:10px}"
                                 "QPushButton{padding:2px 4px}")
+        # runButton.setShortcut("Ctrl+R")
         penSlider.setStyleSheet("QSlider{padding:0px 0px}")
         layout.setSpacing(0)
         layout.addWidget(self.colorBox, 0, 0, 2, 1)
@@ -739,6 +747,9 @@ class MyWidget(QWidget):
                                  "QPushButton{border:2px}"
                                  "QPushButton{border-radius:4px}"
                                  "QPushButton{padding:2px 4px}")
+        # previousButton.setShortcut("Ctrl+D")
+        # nextButton.setShortcut("Ctrl+S")
+        # abandonButton.setShortcut("Ctrl+A")
 
         # layout.setSpacing(10)
         layout.addWidget(self.colorBox, 0, 0, 1, 2)

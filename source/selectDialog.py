@@ -6,14 +6,13 @@ from PySide2.QtGui import QCursor
 import cv2
 import numpy as np
 import config
-
 from utils import numpytoPixmap
 
 
 class SelectDialog(QDialog):
-	def __init__(self, image,imageResult):
+	def __init__(self,widget,image, imageResult):
 		super(SelectDialog, self).__init__()
-
+		self.widget = widget
 		self.image = image.copy()
 		self.candidateResults = imageResult
 		labelW = 200 #控制图片大小
@@ -64,10 +63,34 @@ class SelectDialog(QDialog):
 
 		self.Vlayout.addLayout(self.resultLayout)  # 插入四个结果布局
 
+		self.abandonlayout = QHBoxLayout() #放弃按钮布局
+		abandonButton = QPushButton("放弃")
+		abandonButton.setFixedWidth(200)
+		abandonButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
+								 "QPushButton{width:200}"
+                                 "QPushButton:hover{background-color:#871926}"
+                                 "QPushButton{background-color:#B22222;}"
+                                 "QPushButton{border:2px}"
+                                 "QPushButton{border-radius:4px}"
+                                 "QPushButton{padding:2px 4px}")
+		abandonButton.clicked.connect(self.abandonClick)
+		self.abandonlayout.addWidget(abandonButton)
+		self.Vlayout.addLayout(self.abandonlayout)
+
+
 
 		self.setLayout(self.Vlayout)
 
 		self.buttonGroup.button(0).setChecked(True)
+
+	#放弃
+	def abandonClick(self):
+		# self.selectPass = True
+		self.close()
+		self.widget.abandon()
+		# pass
+		# self.close()
+		# MyWidget.newSet()
 
 
 	def selectImg(self,i):

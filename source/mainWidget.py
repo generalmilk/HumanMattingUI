@@ -146,7 +146,7 @@ class MyWidget(QWidget):
             if os.path.exists(i):
                 self.imageResult.append(cv2.imread(i, cv2.IMREAD_UNCHANGED))
         self.imageResult1 = copy.deepcopy(self.imageResult)
-        self.selectDialog = SelectDialog(image, self.imageResult)
+        self.selectDialog = SelectDialog(self,image, self.imageResult)
         if self.selectDialog.exec_():
             return trimaps[self.selectDialog.selectId]
         else:
@@ -178,7 +178,10 @@ class MyWidget(QWidget):
                 self.trimap = self.openSelectDialog(self.image, self.trimaps, self.imgName)
         if len(self.trimap.shape) == 2:
             self.trimap = np.stack([self.trimap] * 3, axis=2)
-        assert self.image.shape == self.trimap.shape
+        try:
+            assert self.image.shape == self.trimap.shape
+        except:
+            return
 
         h, w = self.image.shape[:2]
         if h <= 400 and w <= 400 :
@@ -218,10 +221,13 @@ class MyWidget(QWidget):
             fileName = imgName.split('.')[0]+'.png'
         else:
             fileName = 'None'
-        resultFolder = [resPath+'%s/alpha/'%self.resultImgPath,resPath+'%s/trimap/'%self.resultImgPath]
-        for path in resultFolder:
-            if os.path.exists(path+fileName):
-                os.remove(path+fileName)
+        try:
+            resultFolder = [resPath+'%s/alpha/'%self.resultImgPath,resPath+'%s/trimap/'%self.resultImgPath]
+            for path in resultFolder:
+                if os.path.exists(path+fileName):
+                    os.remove(path+fileName)
+        except:
+            pass
         self.newSet()
 
     def getGradient(self):

@@ -148,7 +148,10 @@ class MyWidget(QWidget):
         self.imageResult1 = copy.deepcopy(self.imageResult)
         self.selectDialog = SelectDialog(self,image, self.imageResult)
         if self.selectDialog.exec_():
-            return trimaps[self.selectDialog.selectId]
+            if self.selectDialog.selectId<=3:
+                return trimaps[self.selectDialog.selectId]
+            else:
+                return trimaps[0]
         else:
             return trimaps[0]
 
@@ -175,7 +178,9 @@ class MyWidget(QWidget):
             if len(self.trimaps) == 1:
                 self.trimap = self.trimaps[0]
             else:
+                print('1')
                 self.trimap = self.openSelectDialog(self.image, self.trimaps, self.imgName)
+                print('2')
         if len(self.trimap.shape) == 2:
             self.trimap = np.stack([self.trimap] * 3, axis=2)
         try:
@@ -206,6 +211,9 @@ class MyWidget(QWidget):
         self.setFinal()
         self.getGradient()
         self.setWindowTitle(self.imgName.split('/')[-1])
+        if self.selectDialog.selectId==5:
+            self.newSet()
+            self.selectDialog.selectId = 0
 
     def popup(self):  # 下一页
         self.saveAlpha()

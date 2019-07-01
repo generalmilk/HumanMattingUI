@@ -15,6 +15,15 @@ class BtnLabel(QLabel):
     def mousePressEvent(self, QMouseEvent):
         self.widget.selectImg(self.i)
 
+class BtnLabel1(QPushButton):
+    def __init__(self, widget, parent=None):
+        self.widget = widget
+        QPushButton.__init__(self, parent)
+        self.setMouseTracking(True)
+
+    def mousePressEvent(self, QMouseEvent):
+        self.widget.abandonClick(5)
+
 
 class HoverButtonTop(QPushButton):
 

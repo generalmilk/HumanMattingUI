@@ -64,40 +64,47 @@ class SelectDialog(QDialog):
 		self.Vlayout.addLayout(self.resultLayout)  # 插入四个结果布局
 
 		self.abandonlayout = QHBoxLayout() #放弃按钮布局
-		abandonButton = QPushButton("放弃")
+		abandonButton = BtnLabel(self,5)
 		abandonButton.setFixedWidth(200)
-		abandonButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
+		abandonButton.setStyleSheet("QPushButton{color:black;font-size:18px;}"
 								 "QPushButton{width:200}"
                                  "QPushButton:hover{background-color:#871926}"
-                                 "QPushButton{background-color:#B22222;}"
+                                 "QPushButton{background-color:#871926;}"
                                  "QPushButton{border:2px}"
                                  "QPushButton{border-radius:4px}"
                                  "QPushButton{padding:2px 4px}")
-		abandonButton.clicked.connect(self.abandonClick)
+		# abandonButton.clicked.connect(self.abandonClick)
 		self.abandonlayout.addWidget(abandonButton)
 		self.Vlayout.addLayout(self.abandonlayout)
-
-
 
 		self.setLayout(self.Vlayout)
 
 		self.buttonGroup.button(0).setChecked(True)
 
 	#放弃
-	def abandonClick(self):
-		# self.selectPass = True
-		self.close()
-		self.widget.abandon()
-		# pass
-		# self.close()
-		# MyWidget.newSet()
+	# def abandonClick(self):
+	# 	self.widget.abandon()
+	# 	self.close()
+
+	def abandonClick(self,i):
+		self.selectId = i
+		# self.selectAlpha = self.selectAlphas[self.selectId]
+		self.selectTrue = True
+		self.accept()
 
 
 	def selectImg(self,i):
 		self.selectId = i
-		self.selectAlpha = self.selectAlphas[self.selectId]
-		self.selectTrue = True
-		self.accept()
+		if self.selectId <=3:
+			self.selectAlpha = self.selectAlphas[self.selectId]
+			self.selectTrue = True
+			self.accept()
+		else:
+			self.selectAlpha = self.selectAlphas[0]
+			self.accept()
+			# self.widget.newSet()
+
+
 
 
 	def changeBackground(self,bgr,alpha,background):

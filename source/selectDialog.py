@@ -65,14 +65,16 @@ class SelectDialog(QDialog):
 
 		self.abandonlayout = QHBoxLayout() #放弃按钮布局
 		abandonButton = BtnLabel(self,5)
+		abandonButton.setText('放弃')
+		abandonButton.setAlignment(Qt.AlignCenter)
 		abandonButton.setFixedWidth(200)
-		abandonButton.setStyleSheet("QPushButton{color:black;font-size:18px;}"
-								 "QPushButton{width:200}"
-                                 "QPushButton:hover{background-color:#871926}"
-                                 "QPushButton{background-color:#871926;}"
-                                 "QPushButton{border:2px}"
-                                 "QPushButton{border-radius:4px}"
-                                 "QPushButton{padding:2px 4px}")
+		abandonButton.setStyleSheet("QLabel{color:rgb(255,255,255);font-size:18px;}"
+								 "QLabel{width:200}"
+                                 "QLabel:hover{background-color:#871926}"
+                                 "QLabel{background-color:#871926;}"
+                                 "QLabel{border:2px}"
+                                 "QLabel{border-radius:4px}"
+                                 "QLabel{padding:5px 4px}")
 		# abandonButton.clicked.connect(self.abandonClick)
 		self.abandonlayout.addWidget(abandonButton)
 		self.Vlayout.addLayout(self.abandonlayout)

@@ -178,9 +178,7 @@ class MyWidget(QWidget):
             if len(self.trimaps) == 1:
                 self.trimap = self.trimaps[0]
             else:
-                print('1')
                 self.trimap = self.openSelectDialog(self.image, self.trimaps, self.imgName)
-                print('2')
         if len(self.trimap.shape) == 2:
             self.trimap = np.stack([self.trimap] * 3, axis=2)
         try:

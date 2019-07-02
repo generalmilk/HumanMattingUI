@@ -169,10 +169,8 @@ class MySlider(QSlider):
 
 class MyToolButton(QPushButton):
     def __init__(self, widget, command):
-        # print(command)
         super(MyToolButton, self).__init__(command)
         self.setCheckable(True)
-        # self.resize(50,50)
         self.command = command
         self.texts = self.command.split('&')
         self.setStyleSheet("background-color:white")
@@ -217,7 +215,6 @@ class MyButtonGroup(QButtonGroup):
     def __init__(self, widget, command):
         super(MyButtonGroup, self).__init__()
         self.command = command
-        # print(self.command)
         self.texts = self.command.split('&')
         self.widget = widget
         self.commands = {
@@ -225,7 +222,7 @@ class MyButtonGroup(QButtonGroup):
             'Foreground&Background&Unknown':    lambda : self.widget.setColor(self.texts[self.checkedId()]),
             'Grid&Red&Green&Blue':      lambda : self.widget.changeBG(self.checkedId()),
             'Pen&Filler': lambda : self.widget.setTool(self.texts[self.checkedId()])
-            # 'Pen&Filler': 
+            # 'Pen&Filler':
         }
         # assert self.command in self.commands, "MyButtonGroup " + self.command + " not implement!"
         self.buttonGroup = self.commands[self.command]

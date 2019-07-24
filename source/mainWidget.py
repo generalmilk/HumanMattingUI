@@ -2,14 +2,16 @@ import sys
 import json
 import os, copy
 import numpy as np
-import cv2,re
+import cv2, re
 
 from PySide2.QtWidgets import (QApplication, QVBoxLayout, QWidget,
-                               QHBoxLayout, QSlider, QFileDialog, QMessageBox, QGroupBox, QGridLayout, QPushButton, QLabel, QShortcut)
+                               QHBoxLayout, QSlider, QFileDialog, QMessageBox, QGroupBox, QGridLayout, QPushButton,
+                               QLabel, QShortcut)
 from PySide2.QtCore import Slot, Qt, QSize
 from PySide2.QtGui import QPixmap, QImage, QCursor, QFont, QIcon, QKeySequence
 
-from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyToolButton, MyColorButton, HoverButtonTop, HoverButtonBottom
+from widgets import MyPushButton, ClickLabel, MySlider, MyButtonGroup, MyToolButton, MyColorButton, HoverButtonTop, \
+    HoverButtonBottom
 from utils import numpytoPixmap, ImageInputs, addBlankToLayout
 from matting.solve_foreground_background import solve_foreground_background
 import tools
@@ -42,8 +44,8 @@ class MyWidget(QWidget):
                 resize = False
 
             pixmap = numpytoPixmap(array)
-        if pixmap.width() <= 400 and pixmap.height() <= 400 :
-            imgx, imgy = (pixmap.width(),pixmap.height())
+        if pixmap.width() <= 400 and pixmap.height() <= 400:
+            imgx, imgy = (pixmap.width(), pixmap.height())
         else:
             imgx, imgy = self.scale
         if resize:
@@ -54,7 +56,7 @@ class MyWidget(QWidget):
         fileName = self.imgName.split('/')[-1]
         imagePath = self.imgName[:-len(fileName)]
         folderName = imagePath.split('/')[-2]
-        imageResultName = re.findall('data_(\d*)', imagePath.split('/')[-3])
+        imageResultName = re.findall(r'data_(\d*)', imagePath.split('/')[-3])
         if bool(imageResultName):
             self.resultImgPath = 'result_' + imageResultName[0]
         else:
@@ -74,15 +76,17 @@ class MyWidget(QWidget):
         if self.final is None and not status:
             self.setImage(-1)
         else:
-            if status==True:
+            if status == True:
                 alpha = self.imageResult1[self.selectDialog.selectId]
                 b, g, r, a = cv2.split(alpha)
                 bgr = np.stack([b, g, r], axis=2)
                 a = np.stack([a] * 3, axis=2) / 255.0
                 show = self.changeBackground(a, True, bgr)
                 self.selectDialog.selectTrue = False
-            elif not mouse and os.path.exists(imagePath[:-len(folderName)-1]+'%s/alpha/'%self.resultImgPath + fileName):
-                alpha = cv2.imread(imagePath[:-len(folderName)-1]+'%s/alpha/'%self.resultImgPath + fileName, cv2.IMREAD_UNCHANGED)
+            elif not mouse and os.path.exists(
+                    imagePath[:-len(folderName) - 1] + '%s/alpha/' % self.resultImgPath + fileName):
+                alpha = cv2.imread(imagePath[:-len(folderName) - 1] + '%s/alpha/' % self.resultImgPath + fileName,
+                                   cv2.IMREAD_UNCHANGED)
                 b, g, r, a = cv2.split(alpha)
                 bgr = np.stack([b, g, r], axis=2)
                 a = np.stack([a] * 3, axis=2) / 255.0
@@ -90,7 +94,7 @@ class MyWidget(QWidget):
                 self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
             else:
                 alpha = self.final.mean(axis=2) / 255.0
-                show = self.changeBackground(alpha,False)
+                show = self.changeBackground(alpha, False)
                 self.mouse = False
             self.setImage(-1, array=show, resize=True, grid=self.gridFlag)
 
@@ -114,7 +118,7 @@ class MyWidget(QWidget):
         QApplication.processEvents()
         self.setFinal()
 
-    def changeBackground(self, alpha,result,bgr=None):
+    def changeBackground(self, alpha, result, bgr=None):
         if not result:
             image, trimap = self.resizeToNormal()
             F, B = solve_foreground_background(image, alpha)
@@ -125,11 +129,10 @@ class MyWidget(QWidget):
             show = F * alpha + (1 - alpha) * self.background
         else:
             self.foreground = bgr
-            self.final = (alpha*255.0).astype('uint8')
+            self.final = (alpha * 255.0).astype('uint8')
             F = self.foreground
             show = F * alpha + (1 - alpha) * self.background
         return show
-
 
     def openSelectDialog(self, image, trimaps, imgPath):
         imgData = imgPath.split('/')
@@ -146,9 +149,9 @@ class MyWidget(QWidget):
             if os.path.exists(i):
                 self.imageResult.append(cv2.imread(i, cv2.IMREAD_UNCHANGED))
         self.imageResult1 = copy.deepcopy(self.imageResult)
-        self.selectDialog = SelectDialog(self,image, self.imageResult)
+        self.selectDialog = SelectDialog(self, image, self.imageResult)
         if self.selectDialog.exec_():
-            if self.selectDialog.selectId<=3:
+            if self.selectDialog.selectId <= 3:
                 return trimaps[self.selectDialog.selectId]
             else:
                 return trimaps[0]
@@ -162,19 +165,17 @@ class MyWidget(QWidget):
         QApplication.processEvents()
         # self.setImageAlpha(self.imageAlpha)
 
-
-
     def newSet(self, prev=False):
         for text in self.texts:
             text.setPixmap(None)
         if prev:
-            self.image, self.trimaps, self.final, self.imgName,self.cnt,self.len = self.imageList.previous()
+            self.image, self.trimaps, self.final, self.imgName, self.cnt, self.len = self.imageList.previous()
             if len(self.trimaps) == 1:
                 self.trimap = self.trimaps[0]
             else:
                 self.trimap = self.openSelectDialog(self.image, self.trimaps, self.imgName)
         else:
-            self.image, self.trimaps, self.final, self.imgName,self.cnt,self.len = self.imageList()
+            self.image, self.trimaps, self.final, self.imgName, self.cnt, self.len = self.imageList()
             if len(self.trimaps) == 1:
                 self.trimap = self.trimaps[0]
             else:
@@ -187,8 +188,8 @@ class MyWidget(QWidget):
             return
 
         h, w = self.image.shape[:2]
-        if h <= 400 and w <= 400 :
-            imgw, imgh = (w,h)
+        if h <= 400 and w <= 400:
+            imgw, imgh = (w, h)
         else:
             imgw, imgh = self.scale
         self.f = min(imgw / w, imgh / h)
@@ -204,12 +205,12 @@ class MyWidget(QWidget):
 
         # self.run()
         self.setSet()
-        self.pageLabel.setText('%s/%s'%(int(self.cnt)+1,self.len))
+        self.pageLabel.setText('%s/%s' % (int(self.cnt) + 1, self.len))
         QApplication.processEvents()
         self.setFinal()
         self.getGradient()
         self.setWindowTitle(self.imgName.split('/')[-1])
-        if self.selectDialog.selectId==5:
+        if self.selectDialog.selectId == 5 and int(self.cnt) + 1 != self.len:
             self.newSet()
             self.selectDialog.selectId = 0
 
@@ -224,14 +225,14 @@ class MyWidget(QWidget):
         resPath = self.imgName[:len(self.imgName) - int(len(imgName) + len(imgFolder) + 1)]
 
         if imgData:
-            fileName = imgName.split('.')[0]+'.png'
+            fileName = imgName.split('.')[0] + '.png'
         else:
             fileName = 'None'
         try:
-            resultFolder = [resPath+'%s/alpha/'%self.resultImgPath,resPath+'%s/trimap/'%self.resultImgPath]
+            resultFolder = [resPath + '%s/alpha/' % self.resultImgPath, resPath + '%s/trimap/' % self.resultImgPath]
             for path in resultFolder:
-                if os.path.exists(path+fileName):
-                    os.remove(path+fileName)
+                if os.path.exists(path + fileName):
+                    os.remove(path + fileName)
         except:
             pass
         self.newSet()
@@ -535,10 +536,10 @@ class MyWidget(QWidget):
         self.vboxAlphaBox.setFixedWidth(120)
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
-        TrimapBtn = HoverButtonTop(self,"Trimap")
+        TrimapBtn = HoverButtonTop(self, "Trimap")
         TrimapBtn.setText('蒙板')
         layout.addWidget(TrimapBtn)
-        TrimapBtn.clicked.connect(lambda:self.Trimap_click(1))
+        TrimapBtn.clicked.connect(lambda: self.Trimap_click(1))
 
         temp = MySlider(self, 'ImageAlphaSlider', Qt.Vertical)
         self.setSlider(temp, 'ImageAlphaSlider')
@@ -549,10 +550,10 @@ class MyWidget(QWidget):
         self.setSlider(temp, 'ImageAlphaSlider')
         layout.addWidget(temp)
 
-        ImageBtn = HoverButtonBottom(self,"Image")
+        ImageBtn = HoverButtonBottom(self, "Image")
         ImageBtn.setText('原图')
         layout.addWidget(ImageBtn)
-        ImageBtn.clicked.connect(lambda:self.Image_click(0))
+        ImageBtn.clicked.connect(lambda: self.Image_click(0))
 
         self.vboxAlphaBox.setLayout(layout)
 
@@ -592,7 +593,7 @@ class MyWidget(QWidget):
         colorLayout.addWidget(unknownRadio)
         buttonGroup.addRadioButton(unknownRadio, 2)
         self.colorBox.setLayout(colorLayout)
-# ~~~~~
+        # ~~~~~
 
         buttonGroup2 = MyButtonGroup(self, "Pen&Filler")
         self.colorBox2 = QGroupBox()
@@ -609,7 +610,7 @@ class MyWidget(QWidget):
         colorLayout.addWidget(fillerRadio)
         buttonGroup2.addRadioButton(fillerRadio, 1)
         self.colorBox2.setLayout(colorLayout)
-# ~~~~~
+        # ~~~~~
         # drawButtonGroup = MyButtonGroup(self, "Pen&Filler")
         # self.toolBox = QGroupBox()
         # colorLayout = QVBoxLayout()
@@ -622,7 +623,6 @@ class MyWidget(QWidget):
         # backgroundRadio.setIcon(QIcon("icon/icon_2.png"))
         # colorLayout.addWidget(backgroundRadio)
         # buttonGroup.addRadioButton(backgroundRadio, 1)
-
 
         # pen
         penButton = MyPushButton(self, config.getText("Pen"), "Pen")
@@ -664,14 +664,13 @@ class MyWidget(QWidget):
         redoShortcut = QShortcut(QKeySequence("Ctrl+Y"), self)
         redoShortcut.activated.connect(self.redo)
 
-
         # cleantrimapButton.setFixedSize(QSize(80,40))
 
         fileUnknownButton = MyPushButton(self, config.getText("FillUnknown"), "FillUnknown")
         unknownUpButton = MyPushButton(self, config.getText("UnknownUp"), "UnknownUp")
         unknownDownButton = MyPushButton(self, config.getText("UnknownDown"), "UnknownDown")
         # fileUnknownButton.setFixedSize(QSize(self.width(),40))
-        #fileUnknownButton.setFixedHeight(60)
+        # fileUnknownButton.setFixedHeight(60)
         # unknownUpButton.setFixedHeight(40)
         # unknownUpButton.setFixedSize(QSize(self.width(),40))
 
@@ -764,11 +763,11 @@ class MyWidget(QWidget):
                                  "QPushButton{border-radius:4px}"
                                  "QPushButton{padding:2px 4px}")
         previousButton.setStyleSheet("QPushButton{color:#444;font-size:18px;}"
-                                 "QPushButton:hover{background-color:#b7b7b7}"
-                                 "QPushButton{background-color:#e7e7e7;border-color: #b7b7b7;}"
-                                 "QPushButton{border:1px solid transparent;}"
-                                 "QPushButton{border-radius:4px}"
-                                 "QPushButton{padding:2px 4px}")
+                                     "QPushButton:hover{background-color:#b7b7b7}"
+                                     "QPushButton{background-color:#e7e7e7;border-color: #b7b7b7;}"
+                                     "QPushButton{border:1px solid transparent;}"
+                                     "QPushButton{border-radius:4px}"
+                                     "QPushButton{padding:2px 4px}")
         nextButton.setStyleSheet("QPushButton{color:#fff;font-size:18px;}"
                                  "QPushButton:hover{background-color:#337ab7;border-color: #2e6da4;}"
                                  "QPushButton{background-color:#3c8dbc;border-color: #367fa9;}"
@@ -776,11 +775,11 @@ class MyWidget(QWidget):
                                  "QPushButton{border-radius:4px}"
                                  "QPushButton{padding:2px 4px}")
         abandonButton.setStyleSheet("QPushButton{color:white;font-size:18px;}"
-                                 "QPushButton:hover{background-color:#B22222}"
-                                 "QPushButton{background-color:#B22222;}"
-                                 "QPushButton{border:2px}"
-                                 "QPushButton{border-radius:4px}"
-                                 "QPushButton{padding:2px 4px}")
+                                    "QPushButton:hover{background-color:#B22222}"
+                                    "QPushButton{background-color:#B22222;}"
+                                    "QPushButton{border:2px}"
+                                    "QPushButton{border-radius:4px}"
+                                    "QPushButton{padding:2px 4px}")
         # previousButton.setShortcut("Ctrl+D")
         # nextButton.setShortcut("Ctrl+S")
         # abandonButton.setShortcut("Ctrl+A")
@@ -826,7 +825,6 @@ class MyWidget(QWidget):
         self.mouse = False
         self.cnt = 1
         self.len = 1
-
 
         self.outputs = []
         self.final = None
